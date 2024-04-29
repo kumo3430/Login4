@@ -14,6 +14,18 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            container: {
+                center: false, // 不自動居中
+                center: true,
+                padding: '0rem',
+                screens: {
+                    'sm': '100vw',
+                    'md': '100vw',
+                    'lg': '100vw',
+                    'xl': '100vw',
+                    '2xl': '100vw',
+                },
+            },
         },
     },
 
