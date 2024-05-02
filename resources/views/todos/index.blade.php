@@ -1,4 +1,3 @@
-<!-- resources/views/habits/index.blade.php -->
 @extends('layouts.authenticated')
 
 @section('title', '習慣列表')

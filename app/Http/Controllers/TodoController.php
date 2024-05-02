@@ -20,4 +20,22 @@ class TodoController extends Controller
         $count = $todos->count();
         return view('habits.index', compact('todos', 'count'));
     }
+
+    function create()
+    {
+        $todo = null;
+        return view('todos.createOrEdit', compact('todo'));
+    }
+
+    function store()
+    {
+        $todo = null;
+        return view('todos.createOrEdit', compact('todo'));
+    }
+
+    function update()
+    {
+        $todo = null;
+        return view('todos.createOrEdit', compact('todo'));
+    }
 }

@@ -32,6 +32,22 @@
             @yield('content')
         </div>
     </div>
+    {{-- <script>
+        document.getElementById('start_at').addEventListener('change', function() {
+            var start_at = new Date(this.value);
+            console.log('start_at:', start_at);
+            // 使用新的 start_at 值更新子視圖
+            document.getElementById('startDate').textContent = start_at.toISOString().split('T')[0];
+            document.getElementById('plusOneDay').textContent = new Date(start_at.getTime() + 1 * 24 * 60 * 60 *
+                1000).toISOString().split('T')[0];
+            document.getElementById('plusThreeDays').textContent = new Date(start_at.getTime() + 3 * 24 * 60 * 60 *
+                1000).toISOString().split('T')[0];
+            document.getElementById('plusSevenDays').textContent = new Date(start_at.getTime() + 7 * 24 * 60 * 60 *
+                1000).toISOString().split('T')[0];
+            document.getElementById('plusFourteenDays').textContent = new Date(start_at.getTime() + 14 * 24 * 60 *
+                60 * 1000).toISOString().split('T')[0];
+        });
+    </script> --}}
 </body>
 
 </html>
