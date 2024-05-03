@@ -47,8 +47,8 @@
                @if($todoId) disabled @endif
           />
           <select
-              name="goalUnit"
-              id="goalUnit"
+              name="goal_unit"
+              id="goal_unit"
                @if($todoId) disabled @endif
               class="p-2 col-span-3 form-input"
           >
