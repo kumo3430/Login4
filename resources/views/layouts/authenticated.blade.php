@@ -11,7 +11,42 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
+    <script>
+        function dietForm(initialType) {
+            console.log("Initial Type:", initialType);
+            return {
+                typeSelect: initialType,
+                preText: '',
+                units: '',
+                init() {
+                    this.updateValues();
+                },
+                updateValues() {
+                    switch (this.typeSelect) {
+                        case '1':
+                            this.preText = '少于';
+                            this.units = '次';
+                            break;
+                        case '2':
+                            this.preText = '至少';
+                            this.units = '豪升';
+                            break;
+                        case '3':
+                            this.preText = '少于';
+                            this.units = '次';
+                            break;
+                        case '4':
+                            this.preText = '至少';
+                            this.units = '份';
+                            break;
+                        default:
+                            this.preText = '';
+                            this.units = '';
+                    }
+                }
+            };
+        }
+    </script>
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -32,22 +67,6 @@
             @yield('content')
         </div>
     </div>
-    {{-- <script>
-        document.getElementById('start_at').addEventListener('change', function() {
-            var start_at = new Date(this.value);
-            console.log('start_at:', start_at);
-            // 使用新的 start_at 值更新子視圖
-            document.getElementById('startDate').textContent = start_at.toISOString().split('T')[0];
-            document.getElementById('plusOneDay').textContent = new Date(start_at.getTime() + 1 * 24 * 60 * 60 *
-                1000).toISOString().split('T')[0];
-            document.getElementById('plusThreeDays').textContent = new Date(start_at.getTime() + 3 * 24 * 60 * 60 *
-                1000).toISOString().split('T')[0];
-            document.getElementById('plusSevenDays').textContent = new Date(start_at.getTime() + 7 * 24 * 60 * 60 *
-                1000).toISOString().split('T')[0];
-            document.getElementById('plusFourteenDays').textContent = new Date(start_at.getTime() + 14 * 24 * 60 *
-                60 * 1000).toISOString().split('T')[0];
-        });
-    </script> --}}
 </body>
 
 </html>

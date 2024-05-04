@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/todos/todoList',[TodoController::class, 'index'])->name('todos.todoList');
 Route::get('/todo/create',[TodoController::class, 'create'])->name('todo.create');
 Route::post('/todo/store',[TodoController::class, 'store'])->name('todo.store');
+Route::get('/todo/edit/{id}',[TodoController::class,'edit'])->name('todo.edit');
 Route::get('/todo/update/{id}',[TodoController::class, 'update'])->name('todo.update');
 
 require __DIR__.'/auth.php';

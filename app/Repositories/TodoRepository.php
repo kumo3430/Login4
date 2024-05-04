@@ -23,22 +23,9 @@ class TodoRepository
         return $this->todo->create($todo)->id;
     }
 
-    function findTodo($id)
+    function find($id)
     {
-        // return $this->transformTodoInData($this->todo->find($id));
         return $this->todo->find($id);
-    }
-
-    protected function transformTodoInData($todo)
-    {
-        // --- 把前端傳來的駝峰命名欄位轉為資料表的蛇形命名
-        $todo['categoryId'] = $todo['category_id'];
-        $todo['startAt'] = $todo['start_at']->format('Y-m-d');
-        $todo['reminderTime'] = $todo['reminder_time']->format('H:i:s');
-        $todo['dueAt'] = $todo['due_at']->format('Y-m-d');
-        // --- 移除不需要的資料
-        unset($todo['category_id'], $todo['start_at'], $todo['reminder_time'], $todo['due_at']);
-        return $todo;
     }
 
     function update($todo)

@@ -20,13 +20,6 @@ class TodoController extends Controller
         return view('todos.index', compact('todos', 'count'));
     }
 
-    // public function show()
-    // {
-    //     $todos = Todo::all();
-    //     $count = $todos->count();
-    //     return view('habits.index', compact('todos', 'count'));
-    // }
-
     function create()
     {
         $todo = null;
@@ -37,10 +30,14 @@ class TodoController extends Controller
     {
         $validated = $request->validated();
 
+        // 抓取驗證過後的資料
         $todo = $validated['todo'];
+
+        // 若習慣類別為作息的話習慣週期為每日
         if ($todo['category_id'] == 5) {
             $todo['frequency'] = 2;
         }
+        
         $todo['user_id'] = Auth::user()->id;
 
         // 過濾所有 categoryItem 陣列中的 null 值
@@ -50,6 +47,13 @@ class TodoController extends Controller
         $this->todoService->store($todo, $categoryItem);
 
         return redirect()->route('todos.todoList')->with('success', 'Todo successfully added');
+    }
+
+    function edit($id)
+    {
+        $todo = $this->todoService->edit($id);
+        // dd(compact('todo'));
+        return view('todos.createOrEdit', compact('todo'));
     }
     public function update(Request $request, $id)
     {

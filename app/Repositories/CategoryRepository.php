@@ -43,18 +43,21 @@ class CategoryRepository
     }
   }
 
-  function findCategoryItem($categoryId, $id)
+  function find($categoryId, $id)
   {
     $model = match ($categoryId) {
-      '1' => $this->studySpacedRepetition,
-      '2' => $this->study,
-      '3' => $this->sport,
-      '4' => $this->diet,
-      '5' => $this->routine,
+      1 => $this->studySpacedRepetition,
+      2 => $this->study,
+      3 => $this->sport,
+      4 => $this->diet,
+      5 => $this->routine,
     };
     // return $this->transformCategoryData($model->where('todo_id', $id)->first(), $categoryId);
     return $model->where('todo_id', $id)->first();
   }
+
+
+
 
   function update($todo)
   {

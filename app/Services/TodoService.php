@@ -26,4 +26,18 @@ class TodoService
       $this->recurringRepository->create($todo['frequency'], $todo['start_at'], $categoryItem, $todo_id);
     }
   }
+
+  function edit($todoId)
+  {
+    $todo = $this->todoRepository->find($todoId);
+
+    $categoryId = $todo['category_id'];
+    $categoryItem = $this->categoryRepository->find($categoryId, $todoId);
+
+    $todoAttributes = $todo->getAttributes();
+    $categoryItemAttributes = $categoryItem->getAttributes();
+    return array_merge($todoAttributes, $categoryItemAttributes);
+  }
+
+
 }
