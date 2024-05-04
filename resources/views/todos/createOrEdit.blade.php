@@ -73,14 +73,19 @@
             <!-- 表單內容 -->
             <div class="mt-3 my-6">
                 <label for="category_id" class="formLabel">習慣類別：</label>
-                <select id="category_id" name="category_id"
-                        {{ $todo ? 'disabled' : '' }} x-model="selectedCategory" class="form-input">
-                    <option value="0" {{ old('category_id', $todo['category_id'] ?? '') == 0 ? 'selected' : '' }}></option>
-                    <option value="1" {{ old('category_id', $todo['category_id'] ?? '') == 1 ? 'selected' : '' }}>間隔學習法</option>
-                    <option value="2" {{ old('category_id', $todo['category_id'] ?? '') == 2 ? 'selected' : '' }}>一般學習法</option>
-                    <option value="3" {{ old('category_id', $todo['category_id'] ?? '') == 3 ? 'selected' : '' }}>運動</option>
-                    <option value="4" {{ old('category_id', $todo['category_id'] ?? '') == 4 ? 'selected' : '' }}>飲食</option>
-                    <option value="5" {{ old('category_id', $todo['category_id'] ?? '') == 5 ? 'selected' : '' }}>作息</option>
+                <select id="category_id" name="category_id" {{ $todo ? 'disabled' : '' }} x-model="selectedCategory"
+                    class="form-input" required>
+                    <option value="">請選擇習慣類別</option>
+                    <option value="1" {{ old('category_id', $todo['category_id'] ?? '') == 1 ? 'selected' : '' }}>間隔學習法
+                    </option>
+                    <option value="2" {{ old('category_id', $todo['category_id'] ?? '') == 2 ? 'selected' : '' }}>一般學習法
+                    </option>
+                    <option value="3" {{ old('category_id', $todo['category_id'] ?? '') == 3 ? 'selected' : '' }}>運動
+                    </option>
+                    <option value="4" {{ old('category_id', $todo['category_id'] ?? '') == 4 ? 'selected' : '' }}>飲食
+                    </option>
+                    <option value="5" {{ old('category_id', $todo['category_id'] ?? '') == 5 ? 'selected' : '' }}>作息
+                    </option>
                 </select>
             </div>
 
@@ -98,8 +103,7 @@
 
             <div class="form-group">
                 <label class="formLabel">習慣標籤：</label>
-                <input type="text" name="label" value="{{ old('label', $todo['label'] ?? '') }}"
-                    class="form-input" />
+                <input type="text" name="label" value="{{ old('label', $todo['label'] ?? '') }}" class="form-input" />
             </div>
 
             <div class="form-group">
@@ -110,8 +114,8 @@
 
             <div class="form-group">
                 <label for="" class="formLabel">提醒時間：</label>
-                <input type="time" name="reminder_time"
-                    value="{{ old('reminder_time', $todo['reminder_time'] ?? '') }}" required class="form-input" />
+                <input type="time" name="reminder_time" value="{{ old('reminder_time', $todo['reminder_time'] ?? '') }}"
+                    required class="form-input" />
             </div>
 
             <template x-if="selectedCategory != '1'">
@@ -119,13 +123,18 @@
                     <div class="form-group">
                         <label class="formLabel">習慣週期：</label>
                         <select name="frequency" id="frequency" {{ $todo ? 'disabled' : '' }} class="form-input">
-                            <option value="0" {{ old('frequency', $todo['frequency'] ?? '') == 0 ? 'selected' : '' }}></option>
-                            <option value="1" {{ old('frequency', $todo['frequency'] ?? '') == 1 ? 'selected' : '' }}>不重複</option>
-                            <option value="2" {{ old('frequency', $todo['frequency'] ?? '') == 2 ? 'selected' : '' }}>每天</option>
-                            <option value="3" {{ old('frequency', $todo['frequency'] ?? '') == 3 ? 'selected' : '' }}>每週</option>
-                            <option value="4" {{ old('frequency', $todo['frequency'] ?? '') == 4 ? 'selected' : '' }}>每月</option>
+                            <option value="0" {{ old('frequency', $todo['frequency'] ?? '') == 0 ? 'selected' : '' }}>
+                            </option>
+                            <option value="1" {{ old('frequency', $todo['frequency'] ?? '') == 1 ? 'selected' : '' }}>
+                                不重複</option>
+                            <option value="2" {{ old('frequency', $todo['frequency'] ?? '') == 2 ? 'selected' : '' }}>
+                                每天</option>
+                            <option value="3" {{ old('frequency', $todo['frequency'] ?? '') == 3 ? 'selected' : '' }}>
+                                每週</option>
+                            <option value="4" {{ old('frequency', $todo['frequency'] ?? '') == 4 ? 'selected' : '' }}>
+                                每月</option>
                         </select>
-                        
+
                     </div>
                     <div class="form-group">
                         <label class="formLabel">結束日期：</label>
@@ -161,6 +170,16 @@
             <template x-if="selectedCategory == '5'">
                 @include('todos.createOrEditCategoryType.routine', ['todoId' => $todo['id'] ?? ''])
             </template>
+
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <!-- 提交按鈕 -->
             <div class="flex justify-end">

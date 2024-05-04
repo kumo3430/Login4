@@ -30,9 +30,10 @@ class StoreTodoRequest extends FormRequest
             'todo.introduction' => 'required|string|max:255',
             'todo.label' => 'nullable|string|max:255',
             'todo.start_at' => 'required|date',
-            'todo.due_at' => $this->dueAtRules(),
+            // 'todo.due_at' => $this->dueAtRules(),
+            'todo.due_at' => 'required|date',
             'todo.reminder_time' => 'required',
-            'todo.frequency' => 'required|integer|min:0|max:4',
+            'todo.frequency' => 'required|integer|min:1|max:4',
             'todo.note' => '',
             'categoryItem.value' => $this->valueRules(),
             'categoryItem.goal_unit' => $this->goalUnitRules(),
@@ -109,18 +110,18 @@ class StoreTodoRequest extends FormRequest
         return $date->format('Y-m-d');
     }
 
-    protected function failedValidation(Validator $validator)
-    {
-        $response = response()->json([
-            'message' => 'The given data was invalid.',
-            'errors' => $validator->errors()
-        ], 422);
+    // protected function failedValidation(Validator $validator)
+    // {
+    //     $response = response()->json([
+    //         'message' => 'The given data was invalid.',
+    //         'errors' => $validator->errors()
+    //     ], 422);
 
-        throw new HttpResponseException($response);
-    }
+    //     throw new HttpResponseException($response);
+    // }
     private function dueAtRules()
     {
-        $categoryId = $this->get('todo.category_id');
+        $categoryId = $this->get('category_id');
         if (in_array($categoryId, [2, 3, 4])) {
             return 'required|date';
         }
@@ -129,9 +130,10 @@ class StoreTodoRequest extends FormRequest
 
     private function valueRules()
     {
-        $categoryId = $this->get('todo.category_id');
-        $itemType = $this->get('categoryItem.type');
-        if (in_array($categoryId, [2, 3, 4])) {
+        $categoryId = $this->get('category_id');
+        $itemType = $this->get('type');
+        Log::info("Validating value with category_id: $categoryId and type: $itemType");
+        if (in_array($categoryId, ['2', 3, 4])) {
             return 'required|integer|min:1';
         } else if (in_array($categoryId, [5]) && in_array($itemType, [3])) {
             return 'required|integer|min:1|max:12';
@@ -141,7 +143,7 @@ class StoreTodoRequest extends FormRequest
 
     private function goalUnitRules()
     {
-        $categoryId = $this->get('todo.category_id');
+        $categoryId = $this->get('category_id');
         if (in_array($categoryId, [2, 3])) {
             return 'required|integer|min:1|max:3';
         }
@@ -150,7 +152,7 @@ class StoreTodoRequest extends FormRequest
 
     private function typeRules()
     {
-        $categoryId = $this->get('todo.category_id');
+        $categoryId = $this->get('category_id');
         if (in_array($categoryId, [3, 4, 5])) {
             return 'required|integer|min:1|max:3';
         }
@@ -159,7 +161,7 @@ class StoreTodoRequest extends FormRequest
 
     private function timeRules()
     {
-        $categoryId = $this->get('todo.category_id');
+        $categoryId = $this->get('category_id');
         $itemType = $this->get('categoryItem.type');
         if ($categoryId == 5 && in_array($itemType, [1, 2])) {
             return 'required|date_format:H:i:s';
@@ -169,7 +171,7 @@ class StoreTodoRequest extends FormRequest
 
     private function spacedRules()
     {
-        $categoryId = $this->get('todo.category_id');
+        $categoryId = $this->get('category_id');
         if (in_array($categoryId, [1])) {
             return 'required|date';
         }
