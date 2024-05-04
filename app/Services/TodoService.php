@@ -14,6 +14,11 @@ class TodoService
     protected CategoryRepository $categoryRepository,
   ) {
   }
+  function show($userId)
+  {
+      return $this->recurringRepository->findTodoMainAndRecurring($userId);
+  }
+
 
   function store($todo, $categoryItem)
   {
@@ -39,5 +44,13 @@ class TodoService
     return array_merge($todoAttributes, $categoryItemAttributes);
   }
 
+  function update($todo)
+  {
+      $this->todoRepository->update($todo);
+  }
 
+  function destroy($id)
+  {
+      $this->todoRepository->destroy($id);
+  }
 }

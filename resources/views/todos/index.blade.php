@@ -31,8 +31,27 @@
             <tbody>
                 @foreach ($todos as $index => $todo)
                     <tr class="bg-white border-b hover:bg-gray-50">
-                        <td class="py-4 sm:px-6">{{ $todo->title }}</td>
-                        <!-- 其他數據 -->
+                        <th scope="row" class="py-4 sm:px-6 font-medium text-gray-900 whitespace-nowrap">
+                            {{ $todo->title }}
+                        </th>
+                        <td class="hidden sm:table-cell sm:px-6 sm:py-4">
+                            {{ $todo->category_id }}
+                        </td>
+                        <td class="hidden sm:table-cell sm:px-6 sm:py-4">
+                            {{ $todo->introduction }}
+                        </td>
+                        <td class="py-4 sm:px-6">
+                            {{ $todo->displayText }}
+                        </td>
+                        <!-- // TODO 刪除提醒 -->
+                        <td class="py-4 sm:px-6">
+                            <a href="{{ route('todo.edit', $todo->id) }}">編輯</a> /
+                            <form action="{{ route('todo.destroy', $todo->id) }}" method="POST" style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit">刪除</button>
+                            </form>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

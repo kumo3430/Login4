@@ -15,12 +15,13 @@ class TodoController extends Controller
     }
     public function index()
     {
-        $todos = Todo::all();
-        $count = $todos->count();
-        return view('todos.index', compact('todos', 'count'));
+        $userId = Auth::user()->id;
+        $todos = $this->todoService->show($userId);
+        // dd($todos);
+        return view('todos.index', compact('todos'));
     }
 
-    function create()
+    public function create()
     {
         $todo = null;
         return view('todos.createOrEdit', compact('todo'));
@@ -37,7 +38,7 @@ class TodoController extends Controller
         if ($todo['category_id'] == 5) {
             $todo['frequency'] = 2;
         }
-        
+
         $todo['user_id'] = Auth::user()->id;
 
         // 過濾所有 categoryItem 陣列中的 null 值
@@ -49,27 +50,24 @@ class TodoController extends Controller
         return redirect()->route('todos.todoList')->with('success', 'Todo successfully added');
     }
 
-    function edit($id)
+    public function edit($id)
     {
         $todo = $this->todoService->edit($id);
-        // dd(compact('todo'));
         return view('todos.createOrEdit', compact('todo'));
     }
-    public function update(Request $request, $id)
+
+    public function update(StoreTodoRequest $request)
     {
-        // $user = User::findOrFail($id);
-        // $user->update($request->all());
+        $validated = $request->validated();
 
-        // if ($request->ajax()) {
-        //     return response()->json([
-        //         'status' => 'success',
-        //         'message' => 'User updated successfully.',
-        //         'data' => $user
-        //     ]);
-        // }
-        return response()->json(['message' => 'Todo successfully added'], 200);
-        // return back()->with('success', 'User updated successfully.');
+        $todo = $validated['todo'];
+        // $categoryItem = $validated['categoryItem'];
+        $this->todoService->update($todo);
+        return response()->json(['message' => 'Todo successfully edited'], 200);
     }
-
-
+    public function destroy($id)
+    {
+        $this->todoService->destroy($id);
+        return redirect()->back();
+    }
 }

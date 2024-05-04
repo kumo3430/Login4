@@ -83,6 +83,7 @@ class RecurringRepository
     return $todos->map(function ($todo) {
       $todo->category_id = $todo->category;
       $todo->frequency = $todo->frequencyType;
+      $todo->displayText = $this->generateDisplayText($todo);
       return $todo;
     });
   }
