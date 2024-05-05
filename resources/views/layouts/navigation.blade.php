@@ -15,10 +15,10 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('todos.todoList')" :active="request()->routeIs('todos.todoList')">
+                    <x-nav-link :href="route('todos.index')" :active="request()->routeIs('todos.index')">
                         {{ __('習慣列表') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('todo.create')" :active="request()->routeIs('todo.create')">
+                    <x-nav-link :href="route('todos.create')" :active="request()->routeIs('todos.create')">
                         {{ __('新增習慣') }}
                     </x-nav-link>
                 </div>
@@ -84,10 +84,10 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('todos.todoList')" :active="request()->routeIs('todos.todoList')">
+            <x-responsive-nav-link :href="route('todos.index')" :active="request()->routeIs('todos.index')">
                 {{ __('習慣列表') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('todo.create')" :active="request()->routeIs('todo.create')">
+            <x-responsive-nav-link :href="route('todos.create')" :active="request()->routeIs('todos.create')">
                 {{ __('新增習慣') }}
             </x-responsive-nav-link>
         </div>

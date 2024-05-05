@@ -103,7 +103,7 @@
                     placeholder="Search for items" />
             </div>
 
-            <a href="{{ route('todo.create') }}"
+            <a href="{{ route('todos.create') }}"
                 class="inline-block py-2 px-3 border rounded-xl bg-blue-700 text-blue-100 my-4">
                 新增習慣
             </a>
@@ -144,8 +144,8 @@
                         </td>
                         <!-- // TODO 刪除提醒 -->
                         <td class="py-4 sm:px-6">
-                            <a href="{{ route('todo.edit', $todo->id) }}">編輯</a> /
-                            <form action="{{ route('todo.destroy', $todo->id) }}" method="POST"
+                            <a href="{{ route('todos.edit', $todo->id) }}">編輯</a> /
+                            <form action="{{ route('todos.destroy', $todo->id) }}" method="POST"
                                 style="display: inline;">
                                 @csrf
                                 @method('DELETE')

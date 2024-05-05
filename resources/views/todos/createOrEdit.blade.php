@@ -64,7 +64,7 @@
         @endif
     </article>
     <div class="w-full border rounded-xl p-5 bg-white sm:w-3/4 sm:p-8 sm:m-10">
-        <form x-data="{ selectedCategory: '{{ $todo['category_id'] ?? '' }}' }" action="{{ $todo ? route('todo.update', $todo['id']) : route('todo.store') }}"
+        <form x-data="{ selectedCategory: '{{ $todo['category_id'] ?? '' }}' }" action="{{ $todo ? route('todos.update', $todo['id']) : route('todos.store') }}"
             method="POST">
             @csrf
             @if ($todo)
