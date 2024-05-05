@@ -33,7 +33,7 @@ class StoreTodoRequest extends FormRequest
             // 'todo.due_at' => $this->dueAtRules(),
             'todo.due_at' => 'required|date',
             'todo.reminder_time' => 'required',
-            'todo.frequency' => 'required|integer|min:1|max:4',
+            'todo.frequency' => 'required|integer|min:0|max:4',
             'todo.note' => '',
             'categoryItem.value' => $this->valueRules(),
             'categoryItem.goal_unit' => $this->goalUnitRules(),
@@ -84,7 +84,7 @@ class StoreTodoRequest extends FormRequest
                 'label' => $this->label,
                 'start_at' => $this->start_at,
                 'reminder_time' => $this->reminder_time,
-                'frequency' => $this->frequency,
+                'frequency' => ($this->category_id == 1 || $this->category_id == 5) ? $this->frequencyTransform($this->category_id) : $this->frequency,
                 'due_at' => ($this->category_id == 1 || $this->category_id == 5) ? $this->start_at : $this->due_at,
             ],
             'categoryItem' => [
@@ -99,13 +99,23 @@ class StoreTodoRequest extends FormRequest
             ]
         ]);
     }
-    protected function calculateFutureDate($originalDate, $daysToAdd) {
+    protected function frequencyTransform($category_id)
+    {
+        if ($category_id == 5) {
+            $todo['frequency'] = 2;
+        } else if ($category_id == 1) {
+            $todo['frequency'] = 0;
+        }
+    }
+
+    protected function calculateFutureDate($originalDate, $daysToAdd)
+    {
         // 創建 DateTime 對象
         $date = new \DateTime($originalDate);
-    
+
         // 增加天數
         $date->add(new \DateInterval('P' . $daysToAdd . 'D'));
-    
+
         // 返回格式化的日期
         return $date->format('Y-m-d');
     }

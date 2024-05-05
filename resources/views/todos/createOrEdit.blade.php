@@ -118,13 +118,12 @@
                     required class="form-input" />
             </div>
 
-            <template x-if="selectedCategory != '1'">
+            <template x-if="selectedCategory == '2' || selectedCategory == '3' || selectedCategory == '4'">
                 <div>
                     <div class="form-group">
                         <label class="formLabel">習慣週期：</label>
                         <select name="frequency" id="frequency" {{ $todo ? 'disabled' : '' }} class="form-input">
-                            <option value="0" {{ old('frequency', $todo['frequency'] ?? '') == 0 ? 'selected' : '' }}>
-                            </option>
+                            <option value="">請選擇習慣週期</option>
                             <option value="1" {{ old('frequency', $todo['frequency'] ?? '') == 1 ? 'selected' : '' }}>
                                 不重複</option>
                             <option value="2" {{ old('frequency', $todo['frequency'] ?? '') == 2 ? 'selected' : '' }}>

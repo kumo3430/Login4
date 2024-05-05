@@ -33,12 +33,6 @@ class TodoController extends Controller
 
         // 抓取驗證過後的資料
         $todo = $validated['todo'];
-
-        // 若習慣類別為作息的話習慣週期為每日
-        if ($todo['category_id'] == 5) {
-            $todo['frequency'] = 2;
-        }
-
         $todo['user_id'] = Auth::user()->id;
 
         // 過濾所有 categoryItem 陣列中的 null 值
