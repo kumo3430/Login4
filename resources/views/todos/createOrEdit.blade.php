@@ -4,6 +4,10 @@
     {{ $todo ? '編輯習慣' : '新增習慣' }}
 @endsection
 
+@section('scripts')
+    @vite(['resources/js/todoEdit.js'])
+@endsection
+
 @section('header')
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         {{ $todo ? '編輯習慣' : '新增習慣' }}

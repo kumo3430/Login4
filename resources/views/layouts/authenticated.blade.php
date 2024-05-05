@@ -11,73 +11,10 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    <script>
-        function dietForm(initialType) {
-            console.log("Initial Type:", initialType);
-            return {
-                typeSelect: initialType,
-                preText: '',
-                units: '',
-                init() {
-                    this.updateValues();
-                },
-                updateValues() {
-                    switch (this.typeSelect) {
-                        case '1':
-                            this.preText = '少于';
-                            this.units = '次';
-                            break;
-                        case '2':
-                            this.preText = '至少';
-                            this.units = '豪升';
-                            break;
-                        case '3':
-                            this.preText = '少于';
-                            this.units = '次';
-                            break;
-                        case '4':
-                            this.preText = '至少';
-                            this.units = '份';
-                            break;
-                        default:
-                            this.preText = '';
-                            this.units = '';
-                    }
-                }
-            };
-        }
-        function routineForm(initialType) {
-        return {
-            typeSelect: initialType,
-            preText: '',
-            units: '',
-            init() {
-                this.updateValues();
-            },
-            updateValues() {
-                switch (this.typeSelect) {
-                    case '1':
-                        this.preText = '早於';
-                        this.units = '睡覺';
-                        break;
-                    case '2':
-                        this.preText = '早於';
-                        this.units = '起床';
-                        break;
-                    case '3':
-                        this.preText = '睡滿';
-                        this.units = '小時';
-                        break;
-                    default:
-                        this.preText = '';
-                        this.units = '';
-                        break;
-                }
-            }
-        };
-    }
-    </script>
+
     <!-- Scripts -->
+    @yield('scripts')
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 

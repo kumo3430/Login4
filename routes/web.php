@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TodoController;
+use App\Http\Controllers\CheckController;
 use App\Http\Controllers\ProfileController;
 
 /*
@@ -29,12 +30,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Route::get('/todos',[TodoController::class, 'index'])->name('todos.index');
-// Route::get('/todos/create',[TodoController::class, 'create'])->name('todos.create');
+Route::get('/checks',[CheckController::class, 'index'])->name('checks.index');
+Route::put('/checks/{id}',[CheckController::class, 'update'])->name('checks.update');
+
 // Route::post('/todos/store',[TodoController::class, 'store'])->name('todos.store');
-// Route::get('/todos/{id}/edit',[TodoController::class,'edit'])->name('todos.edit');
-// Route::put('/todos/{id}',[TodoController::class, 'update'])->name('todos.update');
+//// Route::get('/todos/create',[TodoController::class, 'create'])->name('todos.create');
+//// Route::get('/todos/{id}/edit',[TodoController::class,'edit'])->name('todos.edit');
+
 // Route::delete('/todo/{id}',[TodoController::class,'destroy'])->name('todos.destroy');
 
-Route::resource('todos', TodoController::class);
+// Route::resource('todos', TodoController::class);
+// Route::post('/todos/recurringAdd',[TodoController::class, 'recurringAdd'])->name('todos.recurringAdd');
+Route::resources([
+    'todos' => TodoController::class,
+    // 'checks' => CheckController::class,
+]);
 require __DIR__.'/auth.php';

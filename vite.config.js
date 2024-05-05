@@ -5,7 +5,8 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/css/todoEdit.css',
+                'resources/js/todoEdit.js',
+                'resources/js/todoCheck.js',
                 'resources/css/app.css',
                 'resources/js/app.js',
             ],

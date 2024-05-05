@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('todos.create')" :active="request()->routeIs('todos.create')">
                         {{ __('新增習慣') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('checks.index')" :active="request()->routeIs('checks.index')">
+                        {{ __('習慣紀錄') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -89,6 +92,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('todos.create')" :active="request()->routeIs('todos.create')">
                 {{ __('新增習慣') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('checks.index')" :active="request()->routeIs('checks.index')">
+                {{ __('習慣紀錄') }}
             </x-responsive-nav-link>
         </div>
 
