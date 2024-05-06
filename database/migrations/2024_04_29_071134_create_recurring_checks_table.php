@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedInteger('current_value')->nullable();
             $table->time('sleep_time')->nullable();
             $table->time('wake_up_time')->nullable();
+            $table->timestamps();
         });
     }
 

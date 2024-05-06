@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/checks',[CheckController::class, 'index'])->name('checks.index');
 Route::put('/checks/{id}',[CheckController::class, 'update'])->name('checks.update');
+Route::post('/checks/{id}/record',[CheckController::class, 'record'])->name('checks.record');
 
 // Route::post('/todos/store',[TodoController::class, 'store'])->name('todos.store');
 //// Route::get('/todos/create',[TodoController::class, 'create'])->name('todos.create');

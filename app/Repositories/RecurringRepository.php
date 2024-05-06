@@ -32,9 +32,9 @@ class RecurringRepository
     $instance['start_date'] = $start_at;
 
     if (isset($categoryItem['value']) && !is_null($categoryItem['value'])) {
-      $instance['total_value'] = $categoryItem['value'];
+      $instance['goal_value'] = $categoryItem['value'];
     } else {
-      $instance['total_value'] = null;
+      $instance['goal_value'] = null;
     }
 
     switch ($frequency) {
@@ -55,6 +55,24 @@ class RecurringRepository
     $this->recurringInstance->create($instance);
   }
 
+  function update($value, $isCompleted, $recurringInstanceId)
+  {
+    $recurringInstance = RecurringInstance::find($recurringInstanceId);
+    Log::info('Updating completed value:', [
+      'original' => $recurringInstance->completed_value,
+      'increment' => $value,
+      'new_value' => $recurringInstance->completed_value + $value
+  ]);
+    try {
+      $recurringInstance->completed_value += $value;
+      $recurringInstance->occurrence_status = $isCompleted;
+      // $this->recurringInstance->find($recurringInstanceId)->update($recurringInstance);
+      $recurringInstance->save();
+  } catch (\Exception $e) {
+      // 处理异常
+      return response()->json(['error' => $e->getMessage()], 500);
+  }
+  }
 
   public function findTodoMainAndRecurring($userId, $todoIds = [])
   {

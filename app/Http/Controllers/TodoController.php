@@ -41,7 +41,7 @@ class TodoController extends Controller
 
         $this->todoService->store($todo, $categoryItem);
 
-        return redirect()->route('todos.todoList')->with('success', 'Todo successfully added');
+        return redirect()->route('todos.index')->with('success', 'Todo successfully added');
     }
 
     public function edit($id)

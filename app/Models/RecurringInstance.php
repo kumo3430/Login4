@@ -15,7 +15,8 @@ class RecurringInstance extends Model
         'todo_id', 
         'start_date', 
         'end_date', 
-        'complete_value', 
+        'completed_value', 
+        'goal_value', 
         'occurrence_status', 
         'is_over'
     ];

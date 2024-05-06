@@ -164,7 +164,7 @@ class StoreTodoRequest extends FormRequest
     {
         $categoryId = $this->get('category_id');
         if (in_array($categoryId, [3, 4, 5])) {
-            return 'required|integer|min:1|max:3';
+            return 'required|integer|min:1|max:5';
         }
         return 'nullable';
     }

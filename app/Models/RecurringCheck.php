@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class RecurringCheck extends Model
 {
     use HasFactory;
+    protected $table = 'recurring_checks';    
 
     protected $fillable = [
         'instance_id',
         'check_date',
-        'complete_value',
+        'current_value',
         'sleep_time',
         'wake_up_time'
     ];

@@ -16,9 +16,11 @@ return new class extends Migration
             $table->foreignId('todo_id')->references('id')->on('todos')->onDelete(('cascade'));
             $table->date('start_date');
             $table->date('end_date');
-            $table->unsignedInteger('total_value')->nullable();
+            $table->unsignedInteger('completed_value')->nullable();
+            $table->unsignedInteger('goal_value')->nullable();
             $table->unsignedTinyInteger('occurrence_status')->default(0);
             $table->unsignedTinyInteger('is_added')->default(0);
+            $table->timestamps();
         });
     }
 

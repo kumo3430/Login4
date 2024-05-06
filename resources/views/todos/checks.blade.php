@@ -15,7 +15,7 @@
 @section('content')
     <div class="w-full bg-gray-100 flex flex-wrap p-2 sm:p-5">
         @foreach ($todos as $todo)
-            <div
+            <div id="isCompleted-{{ $todo->recurringInstance[0]->id }}" data-value="{{ $todo->recurringInstance[0]->occurrence_status }}"
                 class="grid grid-cols-6 gap-1 shadow-xl border items-center border-gray-200 p-4 m-4 h-48 bg-white grow shadow-secondary-1 rounded-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
                 <h5 class="col-start-1 col-end-7 mb-2 text-xl font-medium leading-tight">
                     {{ $todo->title }}
@@ -23,11 +23,11 @@
                 <div class="col-start-1 col-end-7"> {{ $todo->category_id }}</div>
                 <div class="col-start-1 col-end-4">目標</div>
                 <div class="col-end-7 col-span-2">已完成</div>
-                <div class="col-start-1 col-end-4"> {{ $todo->displayText }} </div>
-                <div class="col-end-7 col-span-2">{{ $todo->recurringInstance[0]->total_value }}</div>
+                <div class="col-start-1 col-end-4" id="goalValue-{{ $todo->recurringInstance[0]->id }}" data-value="{{ $todo->recurringInstance[0]->goal_value }}"> {{ $todo->displayText }} </div>
+                <div class="col-end-7 col-span-2" id="currentTotal-{{ $todo->recurringInstance[0]->id }}" data-value="{{ $todo->recurringInstance[0]->completed_value }}">{{ $todo->recurringInstance[0]->completed_value }}</div>
                 <div></div>
                 {{-- Counter and Increment/Decrement Buttons --}}
-                <button type="button" onclick="decrementValue({{ $todo->id }})" id="decrement-button"
+                <button type="button" onclick="decrementValue({{ $todo->recurringInstance[0]->id }})" id="decrement-button"
                     data-input-counter-decrement="counter-input"
                     class="flex-shrink-0 col-start-1 col-span-1 bg-gray-100 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 focus:ring-2 focus:outline-none">
                     <svg class="w-2.5 h-2.5 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -36,9 +36,9 @@
                             d="M1 1h16" />
                     </svg>
                 </button>
-                <input id="input-{{ $todo->id }}" type="value" value="0"
+                <input id="input-{{ $todo->recurringInstance[0]->id }}" type="value" value="0"
                     class="flex-shrink-0 col-start-2 col-span-1 text-gray-900 border-0 bg-transparent text-sm font-normal focus:outline-none focus:ring-0 max-w-[2.5rem] px-0" />
-                <button type="button" onclick="incrementValue({{ $todo->id }})" id="increment-button"
+                <button type="button" onclick="incrementValue({{ $todo->recurringInstance[0]->id }})" id="increment-button"
                     data-input-counter-increment="counter-input"
                     class="flex-shrink-0 col-start-3 col-span-1 bg-gray-100 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 focus:ring-2 focus:outline-none">
                     <svg class="w-2.5 h-2.5 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +48,7 @@
                     </svg>
                 </button>
 
-                <button class="col-start-5 col-span-1">
+                <button class="col-start-5 col-span-1" onclick="submitValue({{ $todo->recurringInstance[0]->id }})">
                     <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                         width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                         <path fill-rule="evenodd"

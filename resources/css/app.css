@@ -44,3 +44,11 @@
   background-color: #f2dede; /* 背景顏色 */
   border-color: #ebccd1; /* 邊框顏色 */
 }
+
+.bg-completed {
+  background-color: gray;
+}
+
+.bg-in-progress {
+  background-color: white;
+}
