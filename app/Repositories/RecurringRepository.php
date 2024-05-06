@@ -140,7 +140,12 @@ class RecurringRepository
       ->where('user_id', $userId);
 
     if (!empty($todoIds)) {
-      $query->whereIn('id', $todoIds);
+      $query->with([
+        'recurringInstance' => function ($query) use ($todoIds) {  // 使用 `use` 关键字引入 $userId
+          $query->where('is_added', '=', 0)
+          ->whereIn('todo_id', $todoIds);
+      }
+      ]);
     }
 
     $todos = $query->with([
@@ -149,7 +154,6 @@ class RecurringRepository
       'sports',
       'diets',
       'routines',
-      'recurringInstance'
     ])->get();
 
     $transformedTodos = $this->todoTransform($todos);
@@ -206,7 +210,7 @@ class RecurringRepository
 
   public function getRecordTodoIdsFromRecurringInstances()
   {
-    return RecurringInstance::where('end_date', '>', now())
+    return RecurringInstance::where('is_added', '=', 0)
       ->select('todo_id')
       ->pluck('todo_id')
       ->toArray();
