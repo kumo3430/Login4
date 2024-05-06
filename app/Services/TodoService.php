@@ -28,7 +28,7 @@ class TodoService
     $this->categoryRepository->create($todo['category_id'], $categoryItem);
 
     if ($todo['category_id'] != 1) {
-      $this->recurringRepository->create($todo['frequency'], $todo['start_at'], $categoryItem, $todo_id);
+      $this->recurringRepository->create($todo['frequency'], $todo['start_at'], $categoryItem['value'], $todo_id);
     }
   }
 

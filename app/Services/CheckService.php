@@ -18,14 +18,28 @@ class CheckService
   }
   function show($userId)
   {
-      return $this->recurringRepository->findTodoMainAndRecurring($userId);
+    // 1. 更新
+    $instances = $this->recurringRepository->needRenewInstances();
+    // dd($instances);
+
+    // 2. 創建
+    foreach ($instances as $instance) {
+
+      $this->recurringRepository->isOld($instance['recurring_instance_id']);
+      $startAt = date('Y-m-d', strtotime( $instance['end_date'] . " +1 day"));
+      $this->recurringRepository->create($instance['frequency'], $startAt, $instance['value'], $instance['todo_id']);
+
+    }
+
+    // 2. 顯示
+    return $this->recurringRepository->recurringNowAll($userId);
   }
 
   function update($value, $isCompleted, $recurringInstanceId)
   {
-      $this->recurringRepository->update($value, $isCompleted, $recurringInstanceId);
+    $this->recurringRepository->update($value, $isCompleted, $recurringInstanceId);
   }
-  
+
   function create($value, $recurringInstanceId)
   {
     $this->checkRepository->create($value, $recurringInstanceId);
@@ -47,6 +61,6 @@ class CheckService
 
   function destroy($id)
   {
-      $this->todoRepository->destroy($id);
+    $this->todoRepository->destroy($id);
   }
 }

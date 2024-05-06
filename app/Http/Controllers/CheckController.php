@@ -23,18 +23,14 @@ class CheckController extends Controller
     // 在 TodoController 中
     public function record(Request $request, $recurringInstanceId)
     {
-
-        // 1. instances update completed_value occurrence_status
         $value = (int) $request->value;
         $isCompleted = $request->isCompleted;
-        Log::info('record request:', ['value' => $value, 'isCompleted' => $isCompleted]);
-        $this->checkService->update($value, $isCompleted, $recurringInstanceId);
 
-        // 2. check create instance_id current_value time
+        $this->checkService->update($value, $isCompleted, $recurringInstanceId);
 
         $this->checkService->create($value, $recurringInstanceId);
 
-        return response()->json(['message' => 'Todo updated successfully!']);
+        return response()->json(['message' => 'Todo record successfully!']);
     }
 
 

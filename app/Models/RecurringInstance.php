@@ -18,7 +18,7 @@ class RecurringInstance extends Model
         'completed_value', 
         'goal_value', 
         'occurrence_status', 
-        'is_over'
+        'is_added'
     ];
 
     protected $casts = [

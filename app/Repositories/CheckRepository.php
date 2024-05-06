@@ -16,10 +16,9 @@ class CheckRepository
   }
   public function create($value, $recurringInstanceId)
   {
-    Log::info('record request:', ['value' => $value, 'recurringInstanceId' => $recurringInstanceId]);
+    // Log::info('record request:', ['value' => $value, 'recurringInstanceId' => $recurringInstanceId]);
     $check['current_value'] = $value;
     $check['instance_id'] = $recurringInstanceId;
-
     $this->recurringCheck->create($check);
   }
 }

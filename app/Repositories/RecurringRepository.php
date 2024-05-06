@@ -26,33 +26,86 @@ class RecurringRepository
     protected RecurringCheck $recurringCheck,
   ) {
   }
-  public function create($frequency, $start_at, $categoryItem, $todo_id)
+  public function create($frequency, $start_at, $value, $todo_id)
   {
-    $instance['todo_id'] = $todo_id;
-    $instance['start_date'] = $start_at;
-
-    if (isset($categoryItem['value']) && !is_null($categoryItem['value'])) {
-      $instance['goal_value'] = $categoryItem['value'];
-    } else {
-      $instance['goal_value'] = null;
+    $instance = [
+      'todo_id' => $todo_id,
+      'start_date' => $start_at,
+      'goal_value' => $value ?? null,  
+      'end_date' => $this->calculateEndDate($frequency, $start_at),
+  ];
+    if($frequency == 1) {
+      $instance['is_added'] = 1;
+    }
+    while ($instance['end_date'] < now()) {
+      $instance['is_added'] = 1;
+      $this->recurringInstance->create($instance);
+      $instance['start_date'] = date('Y-m-d', strtotime($instance['end_date'] . " +1 day"));
+      $instance['end_date'] = $this->calculateEndDate($frequency, $instance['start_date']);
+      $instance['is_added'] = 0;
     }
 
+    $this->recurringInstance->create($instance);
+  
+    // while ($instance['end_date'] < now()) {
+    //   $instance['start_date'] = date('Y-m-d', strtotime($instance['end_date'] . " +1 day"));
+    //   $instance['end_date'] = $this->calculateEndDate($frequency, $instance['start_date']);
+    //   while ($instance['end_date'] < now()) {
+    //     $instance['is_added'] = 1;
+    //   }
+    //   $this->recurringInstance->create($instance);
+    // }
+
+    // switch ($frequency) {
+    //   case 1:
+    //     $instance['end_date'] = $start_at;
+    //     $instance['is_added'] = 1;
+    //     break;
+    //   case 2:
+    //     $instance['end_date'] = $start_at;
+    //     break;
+    //   case 3:
+    //     $instance['end_date'] = date('Y-m-d', strtotime($start_at . " +6 day"));
+    //     break;
+    //   case 4:
+    //     $instance['end_date'] = date('Y-m-d', strtotime($start_at . " +30 day"));
+    //     break;
+    // }
+    // $this->recurringInstance->create($instance);
+
+    // while ($instance['end_date'] < now()) {
+    //   $instance['is_added'] = 1;
+    //   $instance['start_at'] = date('Y-m-d', strtotime($instance['end_date'] . " +1 day"));
+    //   switch ($frequency) {
+    //     case 1:
+    //       $instance['end_date'] = $start_at;
+    //       $instance['is_added'] = 1;
+    //       break;
+    //     case 2:
+    //       $instance['end_date'] = $start_at;
+    //       break;
+    //     case 3:
+    //       $instance['end_date'] = date('Y-m-d', strtotime($instance['start_at'] . " +6 day"));
+    //       break;
+    //     case 4:
+    //       $instance['end_date'] = date('Y-m-d', strtotime($instance['start_at'] . " +30 day"));
+    //       break;
+    //   }
+    //   $this->recurringInstance->create($instance);
+    // }
+  }
+
+  private function calculateEndDate($frequency, $start_at)
+  {
     switch ($frequency) {
       case 1:
-        $instance['end_date'] = $start_at;
-        $instance['is_added'] = 1;
-        break;
       case 2:
-        $instance['end_date'] = $start_at;
-        break;
+        return $start_at;
       case 3:
-        $instance['end_date'] = date('Y-m-d', strtotime($start_at . " +7 day"));
-        break;
+        return date('Y-m-d', strtotime($start_at . " +6 day"));
       case 4:
-        $instance['end_date'] = date('Y-m-d', strtotime($start_at . " +30 day"));
-        break;
+        return date('Y-m-d', strtotime($start_at . " +30 day"));
     }
-    $this->recurringInstance->create($instance);
   }
 
   function update($value, $isCompleted, $recurringInstanceId)
@@ -62,16 +115,23 @@ class RecurringRepository
       'original' => $recurringInstance->completed_value,
       'increment' => $value,
       'new_value' => $recurringInstance->completed_value + $value
-  ]);
+    ]);
     try {
       $recurringInstance->completed_value += $value;
       $recurringInstance->occurrence_status = $isCompleted;
       // $this->recurringInstance->find($recurringInstanceId)->update($recurringInstance);
       $recurringInstance->save();
-  } catch (\Exception $e) {
+    } catch (\Exception $e) {
       // 处理异常
       return response()->json(['error' => $e->getMessage()], 500);
+    }
   }
+
+  function isOld($id)
+  {
+    $recurringInstance = RecurringInstance::find($id);
+    $recurringInstance->is_added = 1;
+    $recurringInstance->save();
   }
 
   public function findTodoMainAndRecurring($userId, $todoIds = [])
@@ -150,6 +210,40 @@ class RecurringRepository
       ->select('todo_id')
       ->pluck('todo_id')
       ->toArray();
+  }
+
+  public function needRenewInstances()
+  {
+    $instances = RecurringInstance::with([
+      'Todo' => function ($query) {
+        $query->with(['studies', 'sports', 'diets', 'routines']);
+      }
+    ])
+      ->where('is_added', '=', 0)
+      ->where('end_date', '<', now())
+      ->get();
+
+    $formattedData = $instances->map(function ($instance) {
+      $todo = $instance->Todo;
+      $value = collect([
+        $todo->studies->pluck('value'),
+        $todo->sports->pluck('value'),
+        $todo->diets->pluck('value'),
+        $todo->routines->pluck('value')
+      ])->reject(function ($values) {
+        return $values->isEmpty();
+      })->first();
+
+      return [
+        'recurring_instance_id' => $instance->id,
+        'todo_id' => $todo->id,
+        'frequency' => $todo->frequency,
+        'end_date' => $instance->end_date->format('Y-m-d'),
+        'value' => $value[0],
+      ];
+    });
+
+    return $formattedData;
   }
   public function recurringNowAll($userId)
   {

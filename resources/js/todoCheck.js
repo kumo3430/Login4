@@ -72,8 +72,8 @@ window.submitValue = function(recurringInstanceId) {
   .then(data => {
       console.log('Success:', data);
       input.value = 0;
-      currentTotalElement.textContent = newTotal; // 更新 DOM 显示
-      currentTotalElement.setAttribute('data-value', newTotal); // 更新存储的 data-value
+      currentTotalElement.textContent = newTotal; 
+      currentTotalElement.setAttribute('data-value', newTotal); 
   })
   .catch((error) => {
       console.error('Error:', error);
