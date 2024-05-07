@@ -15,6 +15,10 @@ use App\Models\StudySpacedRepetition;
 
 class RecurringRepository
 {
+  const DAY_INCREMENT = "+1 day";
+  const WEEK_INCREMENT = "+6 day";
+  const MONTH_INCREMENT = "+30 day";
+
   function __construct(
     protected Todo $todo,
     protected Study $study,
@@ -41,7 +45,7 @@ class RecurringRepository
     while ($instance['end_date'] < now()) {
       $instance['is_added'] = 1;
       $this->recurringInstance->create($instance);
-      $instance['start_date'] = date('Y-m-d', strtotime($instance['end_date'] . " +1 day"));
+      $instance['start_date'] = date('Y-m-d', strtotime($instance['end_date'] . self::DAY_INCREMENT ));
       $instance['end_date'] = $this->calculateEndDate($frequency, $instance['start_date']);
       $instance['is_added'] = 0;
     }
@@ -55,9 +59,9 @@ class RecurringRepository
       case 2:
         return $start_at;
       case 3:
-        return date('Y-m-d', strtotime($start_at . " +6 day"));
+        return date('Y-m-d', strtotime($start_at . self::WEEK_INCREMENT ));
       case 4:
-        return date('Y-m-d', strtotime($start_at . " +30 day"));
+        return date('Y-m-d', strtotime($start_at . self::MONTH_INCREMENT ));
     }
   }
 
