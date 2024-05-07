@@ -82,28 +82,49 @@ class RecurringRepository
 
   public function findTodoMainAndRecurring($userId, $todoIds = [])
   {
-    $query = $this->todo->select('id', 'title', 'category_id', 'introduction', 'frequency')
-      ->where('user_id', $userId);
+      // 分步驟查詢 Todo 資訊
+      $todos = $this->fetchTodos($userId, $todoIds);
 
-    if (!empty($todoIds)) {
-      $query->with([
-        'recurringInstance' => function ($query) use ($todoIds) {  // 使用 `use` 关键字引入 $userId
-          $query->where('is_added', '=', 0)
-          ->whereIn('todo_id', $todoIds);
+      // 分步驟查詢 Recurring Instances
+      $recurringInstances = $this->fetchRecurringInstances($todoIds);
+
+      // 數據合併
+      return $this->mergeTodoWithRecurringInstances($this->todoTransform($todos), $recurringInstances);
+  }
+
+  protected function fetchTodos($userId, $todoIds = [])
+  {
+      $query = $this->todo->select('id', 'title', 'category_id', 'introduction', 'frequency')
+                          ->where('user_id', $userId);
+
+      if (!empty($todoIds)) {
+          $query->whereIn('id', $todoIds);
       }
-      ]);
-    }
 
-    $todos = $query->with([
-      'studySpacedRepetitions',
-      'studies',
-      'sports',
-      'diets',
-      'routines',
-    ])->get();
+      return $query->with(['studySpacedRepetitions', 'studies', 'sports', 'diets', 'routines'])->get();
+  }
 
-    $transformedTodos = $this->todoTransform($todos);
-    return $transformedTodos;
+  protected function fetchRecurringInstances($todoIds = [])
+  {
+      if (empty($todoIds)) {
+          return collect();
+      }
+
+      return $this->recurringInstance->whereIn('todo_id', $todoIds)
+                                     ->where('is_added', '=', 0)
+                                     ->get();
+  }
+
+  protected function mergeTodoWithRecurringInstances($todos, $recurringInstances)
+  {
+      // 將 recurringInstances 映射到它們相對應的 todo_id
+      $instancesByTodoId = $recurringInstances->groupBy('todo_id');
+
+      // 合併 todos 與 recurring instances
+      return $todos->map(function ($todo) use ($instancesByTodoId) {
+          $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
+          return $todo;
+      });
   }
 
   private function todoTransform($todos)
