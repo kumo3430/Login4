@@ -92,7 +92,7 @@ class RecurringRepository
       return $this->mergeTodoWithRecurringInstances($this->todoTransform($todos), $recurringInstances);
   }
 
-  protected function fetchTodos($userId, $todoIds = [])
+  public function fetchTodos($userId, $todoIds = [])
   {
       $query = $this->todo->select('id', 'title', 'category_id', 'introduction', 'frequency')
                           ->where('user_id', $userId);
@@ -101,7 +101,9 @@ class RecurringRepository
           $query->whereIn('id', $todoIds);
       }
 
-      return $query->with(['studySpacedRepetitions', 'studies', 'sports', 'diets', 'routines'])->get();
+      $todos = $query->with(['studySpacedRepetitions', 'studies', 'sports', 'diets', 'routines'])->get();
+
+      return $this->todoTransform($todos);
   }
 
   protected function fetchRecurringInstances($todoIds = [])

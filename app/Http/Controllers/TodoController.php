@@ -31,15 +31,7 @@ class TodoController extends Controller
     {
         $validated = $request->validated();
 
-        // // 抓取驗證過後的資料
-        // $todo = $validated['todo'];
-        // $todo['user_id'] = Auth::user()->id;
-
-        // // 過濾所有 categoryItem 陣列中的 null 值
-        // $validated['categoryItem'] = array_filter($validated['categoryItem'], fn($value) => !is_null($value));
-        // $categoryItem = $validated['categoryItem'];
-
-        $this->todoService->store($todo, $categoryItem);
+        $this->todoService->store($validated);
 
         return redirect()->route('todos.index')->with('success', 'Todo successfully added');
     }
