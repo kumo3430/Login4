@@ -20,19 +20,19 @@ class CheckService
   {
     // 1. 更新
     $instances = $this->recurringRepository->needRenewInstances();
-    // dd($instances);
-
     // 2. 創建
-    foreach ($instances as $instance) {
-
-      $this->recurringRepository->isOld($instance['recurring_instance_id']);
-      $startAt = date('Y-m-d', strtotime( $instance['end_date'] . " +1 day"));
-      $this->recurringRepository->create($instance['frequency'], $startAt, $instance['value'], $instance['todo_id']);
-
-    }
-
-    // 2. 顯示
+    $this->processInstances($instances);
+    // 3. 顯示
     return $this->recurringRepository->recurringNowAll($userId);
+  }
+
+  private function processInstances($instances)
+  {
+      foreach ($instances as $instance) {
+          $this->recurringRepository->isOld($instance['recurring_instance_id']);
+          $startAt = date('Y-m-d', strtotime($instance['end_date'] . " +1 day"));
+          $this->recurringRepository->create($instance['frequency'], $startAt, $instance['value'], $instance['todo_id']);
+      }
   }
 
   function update($value, $isCompleted, $recurringInstanceId)

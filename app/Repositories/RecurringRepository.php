@@ -37,6 +37,7 @@ class RecurringRepository
     if($frequency == 1) {
       $instance['is_added'] = 1;
     }
+
     while ($instance['end_date'] < now()) {
       $instance['is_added'] = 1;
       $this->recurringInstance->create($instance);
@@ -44,55 +45,7 @@ class RecurringRepository
       $instance['end_date'] = $this->calculateEndDate($frequency, $instance['start_date']);
       $instance['is_added'] = 0;
     }
-
     $this->recurringInstance->create($instance);
-  
-    // while ($instance['end_date'] < now()) {
-    //   $instance['start_date'] = date('Y-m-d', strtotime($instance['end_date'] . " +1 day"));
-    //   $instance['end_date'] = $this->calculateEndDate($frequency, $instance['start_date']);
-    //   while ($instance['end_date'] < now()) {
-    //     $instance['is_added'] = 1;
-    //   }
-    //   $this->recurringInstance->create($instance);
-    // }
-
-    // switch ($frequency) {
-    //   case 1:
-    //     $instance['end_date'] = $start_at;
-    //     $instance['is_added'] = 1;
-    //     break;
-    //   case 2:
-    //     $instance['end_date'] = $start_at;
-    //     break;
-    //   case 3:
-    //     $instance['end_date'] = date('Y-m-d', strtotime($start_at . " +6 day"));
-    //     break;
-    //   case 4:
-    //     $instance['end_date'] = date('Y-m-d', strtotime($start_at . " +30 day"));
-    //     break;
-    // }
-    // $this->recurringInstance->create($instance);
-
-    // while ($instance['end_date'] < now()) {
-    //   $instance['is_added'] = 1;
-    //   $instance['start_at'] = date('Y-m-d', strtotime($instance['end_date'] . " +1 day"));
-    //   switch ($frequency) {
-    //     case 1:
-    //       $instance['end_date'] = $start_at;
-    //       $instance['is_added'] = 1;
-    //       break;
-    //     case 2:
-    //       $instance['end_date'] = $start_at;
-    //       break;
-    //     case 3:
-    //       $instance['end_date'] = date('Y-m-d', strtotime($instance['start_at'] . " +6 day"));
-    //       break;
-    //     case 4:
-    //       $instance['end_date'] = date('Y-m-d', strtotime($instance['start_at'] . " +30 day"));
-    //       break;
-    //   }
-    //   $this->recurringInstance->create($instance);
-    // }
   }
 
   private function calculateEndDate($frequency, $start_at)
@@ -111,20 +64,9 @@ class RecurringRepository
   function update($value, $isCompleted, $recurringInstanceId)
   {
     $recurringInstance = RecurringInstance::find($recurringInstanceId);
-    Log::info('Updating completed value:', [
-      'original' => $recurringInstance->completed_value,
-      'increment' => $value,
-      'new_value' => $recurringInstance->completed_value + $value
-    ]);
-    try {
-      $recurringInstance->completed_value += $value;
-      $recurringInstance->occurrence_status = $isCompleted;
-      // $this->recurringInstance->find($recurringInstanceId)->update($recurringInstance);
-      $recurringInstance->save();
-    } catch (\Exception $e) {
-      // 处理异常
-      return response()->json(['error' => $e->getMessage()], 500);
-    }
+    $recurringInstance->completed_value += $value;
+    $recurringInstance->occurrence_status = $isCompleted;
+    $recurringInstance->save();
   }
 
   function isOld($id)
@@ -160,7 +102,7 @@ class RecurringRepository
     return $transformedTodos;
   }
 
-  public function todoTransform($todos)
+  private function todoTransform($todos)
   {
     return $todos->map(function ($todo) {
       $todo->category_id = $todo->category;
@@ -170,7 +112,7 @@ class RecurringRepository
     });
   }
 
-  public static function generateDisplayText($todo)
+  private static function generateDisplayText($todo)
   {
     switch ($todo->category_id) {
       case "一般學習法":
@@ -186,7 +128,7 @@ class RecurringRepository
     }
   }
 
-  public static function generateRoutineText($routine)
+  private static function generateRoutineText($routine)
   {
     if (!$routine)
       return "未定義";
