@@ -23,7 +23,7 @@ class CheckService
     // 2. 創建
     $this->processInstances($instances);
     // 3. 顯示
-    return $this->recurringRepository->recurringNowAll($userId);
+    return $this->recurringRepository->findTodoMainRecurring($userId);
   }
 
   private function processInstances($instances)

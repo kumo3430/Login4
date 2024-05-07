@@ -35,17 +35,17 @@ class RecurringRepository
     $instance = [
       'todo_id' => $todo_id,
       'start_date' => $start_at,
-      'goal_value' => $value ?? null,  
+      'goal_value' => $value ?? null,
       'end_date' => $this->calculateEndDate($frequency, $start_at),
-  ];
-    if($frequency == 1) {
+    ];
+    if ($frequency == 1) {
       $instance['is_added'] = 1;
     }
 
     while ($instance['end_date'] < now()) {
       $instance['is_added'] = 1;
       $this->recurringInstance->create($instance);
-      $instance['start_date'] = date('Y-m-d', strtotime($instance['end_date'] . self::DAY_INCREMENT ));
+      $instance['start_date'] = date('Y-m-d', strtotime($instance['end_date'] . self::DAY_INCREMENT));
       $instance['end_date'] = $this->calculateEndDate($frequency, $instance['start_date']);
       $instance['is_added'] = 0;
     }
@@ -59,9 +59,9 @@ class RecurringRepository
       case 2:
         return $start_at;
       case 3:
-        return date('Y-m-d', strtotime($start_at . self::WEEK_INCREMENT ));
+        return date('Y-m-d', strtotime($start_at . self::WEEK_INCREMENT));
       case 4:
-        return date('Y-m-d', strtotime($start_at . self::MONTH_INCREMENT ));
+        return date('Y-m-d', strtotime($start_at . self::MONTH_INCREMENT));
     }
   }
 
@@ -80,53 +80,41 @@ class RecurringRepository
     $recurringInstance->save();
   }
 
-  public function findTodoMainAndRecurring($userId, $todoIds = [])
-  {
-      // 分步驟查詢 Todo 資訊
-      $todos = $this->fetchTodos($userId, $todoIds);
-
-      // 分步驟查詢 Recurring Instances
-      $recurringInstances = $this->fetchRecurringInstances($todoIds);
-
-      // 數據合併
-      return $this->mergeTodoWithRecurringInstances($this->todoTransform($todos), $recurringInstances);
-  }
-
   public function fetchTodos($userId, $todoIds = [])
   {
-      $query = $this->todo->select('id', 'title', 'category_id', 'introduction', 'frequency')
-                          ->where('user_id', $userId);
+    $query = $this->todo->select('id', 'title', 'category_id', 'introduction', 'frequency')
+      ->where('user_id', $userId);
 
-      if (!empty($todoIds)) {
-          $query->whereIn('id', $todoIds);
-      }
+    if (!empty($todoIds)) {
+      $query->whereIn('id', $todoIds);
+    }
 
-      $todos = $query->with(['studySpacedRepetitions', 'studies', 'sports', 'diets', 'routines'])->get();
+    $todos = $query->with(['studySpacedRepetitions', 'studies', 'sports', 'diets', 'routines'])->get();
 
-      return $this->todoTransform($todos);
+    return $this->todoTransform($todos);
   }
 
   protected function fetchRecurringInstances($todoIds = [])
   {
-      if (empty($todoIds)) {
-          return collect();
-      }
+    if (empty($todoIds)) {
+      return collect();
+    }
 
-      return $this->recurringInstance->whereIn('todo_id', $todoIds)
-                                     ->where('is_added', '=', 0)
-                                     ->get();
+    return $this->recurringInstance->whereIn('todo_id', $todoIds)
+      ->where('is_added', '=', 0)
+      ->get();
   }
 
   protected function mergeTodoWithRecurringInstances($todos, $recurringInstances)
   {
-      // 將 recurringInstances 映射到它們相對應的 todo_id
-      $instancesByTodoId = $recurringInstances->groupBy('todo_id');
+    // 將 recurringInstances 映射到它們相對應的 todo_id
+    $instancesByTodoId = $recurringInstances->groupBy('todo_id');
 
-      // 合併 todos 與 recurring instances
-      return $todos->map(function ($todo) use ($instancesByTodoId) {
-          $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
-          return $todo;
-      });
+    // 合併 todos 與 recurring instances
+    return $todos->map(function ($todo) use ($instancesByTodoId) {
+      $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
+      return $todo;
+    });
   }
 
   private function todoTransform($todos)
@@ -177,14 +165,6 @@ class RecurringRepository
     return "{$timeCondition} {$valueOrTime} {$actionText}";
   }
 
-  public function getRecordTodoIdsFromRecurringInstances()
-  {
-    return RecurringInstance::where('is_added', '=', 0)
-      ->select('todo_id')
-      ->pluck('todo_id')
-      ->toArray();
-  }
-
   public function needRenewInstances()
   {
     $instances = RecurringInstance::with([
@@ -218,14 +198,13 @@ class RecurringRepository
 
     return $formattedData;
   }
-  public function recurringNowAll($userId)
+  public function findTodoMainRecurring($userId)
   {
-    $recordTodoIds = $this->getRecordTodoIdsFromRecurringInstances();
+    $recurringInstances = $this->fetchRecurringInstances();
 
-    if (!empty($recordTodoIds)) {
-      $recordTodos = $this->findTodoMainAndRecurring($userId, $recordTodoIds);
-    }
+    $todoIds = $recurringInstances->pluck('todo_id')->unique();
+    $todos = $this->fetchTodos($userId, $todoIds->all());
 
-    return $recordTodos;
+    return $this->mergeTodoWithRecurringInstances($todos, $recurringInstances);
   }
 }
