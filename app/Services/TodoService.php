@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\TodoRepository;
+use Illuminate\Support\Facades\Auth;
 use App\Repositories\CategoryRepository;
 use App\Repositories\RecurringRepository;
 
@@ -16,15 +17,20 @@ class TodoService
   }
   function show($userId)
   {
-      return $this->recurringRepository->findTodoMainAndRecurring($userId);
+    return $this->recurringRepository->findTodoMainAndRecurring($userId);
   }
 
 
-  function store($todo, $categoryItem)
+  function store($validated)
   {
+    $todo = $validated['todo'];
+    $todo['user_id'] = Auth::user()->id;
     $todo_id = $this->todoRepository->create($todo);
 
     $categoryItem['todo_id'] = $todo_id;
+    // 過濾所有 categoryItem 陣列中的 null 值
+    $validated['categoryItem'] = array_filter($validated['categoryItem'], fn($value) => !is_null($value));
+    $categoryItem = $validated['categoryItem'];
     $this->categoryRepository->create($todo['category_id'], $categoryItem);
 
     if ($todo['category_id'] != 1) {
@@ -46,11 +52,11 @@ class TodoService
 
   function update($todo)
   {
-      $this->todoRepository->update($todo);
+    $this->todoRepository->update($todo);
   }
 
   function destroy($id)
   {
-      $this->todoRepository->destroy($id);
+    $this->todoRepository->destroy($id);
   }
 }
