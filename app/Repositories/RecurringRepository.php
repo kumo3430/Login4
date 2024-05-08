@@ -98,23 +98,33 @@ class RecurringRepository
 
   protected function fetchRecurringInstances($todoIds = [])
   {
-    if (empty($todoIds)) {
-      return collect();
+    // 创建一个查询构建器实例
+    $query = $this->recurringInstance->where('is_added', '=', 0);
+
+    // 如果 todoIds 不为空，则增加一个条件过滤 todo_id
+    if (!empty($todoIds)) {
+        $query->whereIn('todo_id', $todoIds);
     }
 
-    return $this->recurringInstance->whereIn('todo_id', $todoIds)
-      ->where('is_added', '=', 0)
-      ->get();
+    // 执行查询并返回结果
+    return $query->get();
   }
 
   protected function mergeTodoWithRecurringInstances($todos, $recurringInstances)
   {
     // 將 recurringInstances 映射到它們相對應的 todo_id
     $instancesByTodoId = $recurringInstances->groupBy('todo_id');
+    
 
     // 合併 todos 與 recurring instances
     return $todos->map(function ($todo) use ($instancesByTodoId) {
-      $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
+      $formattedInstances = $instancesByTodoId[$todo->id]->map(function ($instance) {
+        $instance->start_date = $instance->start_date->format('Y-m-d');
+        $instance->end_date = $instance->end_date->format('Y-m-d');
+        return $instance;
+    });
+    $todo->recurringInstances = $formattedInstances;
+      // $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
       $todo->chart = $this->makeLaravelChart($todo);
       return $todo;
     });
@@ -127,8 +137,22 @@ class RecurringRepository
     // $chart->title($todo->title);
     $chart->displaylegend(false);
     $chart->dataset('', 'line', $this->getDailyChecks($todo))
-    // ->fill(false)
-    ->linetension(0.1);
+      // ->fill(false)
+      ->linetension(0.1);
+
+    $chart->options([
+      'scales' => [
+        'yAxes' => [
+          [
+            'ticks' => [
+              'min' => 0,
+              'max' => $todo->recurringInstance[0]->goal_value,
+              'stepSize' => 1
+            ]
+          ]
+        ]
+      ]
+    ]);
 
     return $chart;
   }
@@ -259,7 +283,8 @@ class RecurringRepository
 
     $todoIds = $recurringInstances->pluck('todo_id')->unique();
     $todos = $this->fetchTodos($userId, $todoIds->all());
-
+    // dd($recurringInstances);
+    // dd($this->mergeTodoWithRecurringInstances($todos, $recurringInstances));
     return $this->mergeTodoWithRecurringInstances($todos, $recurringInstances);
   }
 }

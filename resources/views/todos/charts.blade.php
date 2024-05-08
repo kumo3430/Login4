@@ -21,9 +21,40 @@
                 <h5 class="col-start-1 col-end-7 mb-2 text-xl font-medium leading-tight">
                     {{ $todo->title }}
                 </h5>
-                <div class="col-start-1 col-end-7"> {{ $todo->category_id }}</div>
-                <div class="col-start-1 col-end-4" id="goalValue-{{ $todo->recurringInstance[0]->id }}"
-                    data-value="{{ $todo->recurringInstance[0]->goal_value }}"> {{ $todo->displayText }} </div>
+                <div class="col-start-1 col-end-7">
+                    <div class="grid grid-rows-2 grid-cols-6 grid-flow-col gap-1">
+
+                        <div class="col-start-1 col-end-3"> {{ $todo->category_id }}</div>
+                        <div class="col-start-1 col-end-3" id="goalValue-{{ $todo->recurringInstance[0]->id }}"
+                            data-value="{{ $todo->recurringInstance[0]->goal_value }}"> {{ $todo->displayText }} </div>
+                        <button class="row-span-2 col-span-1 inline-flex items-center justify-center">
+                            <svg class="w-[34px] h-[34px] text-gray-800 dark:text-white" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="m14 8-4 4 4 4" />
+                            </svg>
+
+                        </button>
+                        <div class="row-span-1 col-span-2 inline-flex items-center justify-center">
+                            {{ \Carbon\Carbon::parse($todo->recurringInstances[0]->start_date)->format('Y-m-d') }}
+                            {{-- {{ \Carbon\Carbon::parse($todo->recurringInstances[0]->end_date)->format('Y-m-d') }} --}}
+                        </div>
+                        <div class="row-span-1 col-span-2 inline-flex items-center justify-center">
+                            {{-- {{ \Carbon\Carbon::parse($todo->recurringInstances[0]->start_date)->format('Y-m-d') }} --}}
+                            {{ \Carbon\Carbon::parse($todo->recurringInstances[0]->end_date)->format('Y-m-d') }}
+                        </div>
+                        <button class="row-span-2 col-span-1 inline-flex items-center justify-center">
+                            <svg class="w-[34px] h-[34px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m10 16 4-4-4-4"/>
+                              </svg>
+                              
+                        </button>
+                    </div>
+                </div>
+                {{-- <div class="col-start-1 col-end-3"> {{ $todo->category_id }}</div>
+                <div class="col-start-1 col-end-3" id="goalValue-{{ $todo->recurringInstance[0]->id }}"
+                    data-value="{{ $todo->recurringInstance[0]->goal_value }}"> {{ $todo->displayText }} </div> --}}
                 <div class="col-start-1 col-end-7">
                     {!! $todo->chart->container() !!}
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
