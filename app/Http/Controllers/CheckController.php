@@ -20,6 +20,14 @@ class CheckController extends Controller
         return view('todos.checks', compact('todos'));
     }
 
+    public function chart()
+    {
+        $userId = Auth::user()->id;
+        $todos = $this->checkService->chart($userId);
+        // dd($todos);
+        return view('todos.charts', compact('todos'));
+    }
+
     // 在 TodoController 中
     public function record(Request $request, $recurringInstanceId)
     {

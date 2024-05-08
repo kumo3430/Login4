@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\StudySpacedRepetition;
+use ArielMejiaDev\LarapexCharts\Facades\LarapexChart;
 
 class RecurringRepository
 {
@@ -113,9 +114,73 @@ class RecurringRepository
     // 合併 todos 與 recurring instances
     return $todos->map(function ($todo) use ($instancesByTodoId) {
       $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
+      $todo->chart = $this->makeChart($todo);
       return $todo;
     });
   }
+  protected function makeChart($todo)
+  {
+    $todosDone = [2, 3, 4, 5, 3, 2, 2, 2, 1];      // 這裡是完成的 To-dos 的數據
+    $todosNotYet = $this->getDailyChecks($todo);    // 這裡是未完成的 To-dos 的數據
+    // dd($todosNotYet);
+    // dd($this->createDateRange($todo));
+    $chart = LarapexChart::lineChart()
+      ->setTitle($todo->title)
+      ->setDataset([
+        // [
+        //     'name' => 'Done',
+        //     'data' => $todosDone
+        // ],
+        [
+          'name' => 'Not Yet',
+          'data' => $todosNotYet
+        ]
+      ])
+      // ->setLabels(['Done', 'Not Yet'])
+      ->setXAxis($this->createDateRange($todo));
+
+    return $chart;
+  }
+
+  function getDailyChecks($todo)
+  {
+    $format = 'Y-m-d';
+    $dates = $this->createDateRange($todo, $format);
+
+    $checks = DB::table('recurring_checks')
+      ->select(DB::raw('DATE_FORMAT(check_datetime, "' . '%Y-%m-%d' . '") as formatted_date'), DB::raw('SUM(current_value) as total_value'))
+      ->where('instance_id', $todo->recurringInstance[0]->id)
+      ->whereIn(DB::raw('DATE(check_datetime)'), $dates) // 這裡使用 DATE() 來保證日期格式一致
+      ->groupBy('formatted_date')
+      ->pluck('total_value', 'formatted_date')
+      ->toArray();
+    // dd($dates);
+    // 確保每一天都有數據，沒有的話填充為0
+    $dailyChecks = [];
+    foreach ($dates as $date) {
+
+      $dailyChecks[] = isset($checks[$date]) ? $checks[$date] : 0;
+    }
+    // dd($dailyChecks);
+    return $dailyChecks;
+  }
+
+  function createDateRange($todo, $format = "Y-m-d")
+  {
+    $begin = new \DateTime($todo->recurringInstance[0]->start_date);
+    $end = new \DateTime($todo->recurringInstance[0]->end_date);
+
+    $interval = new \DateInterval('P1D'); // 1 Day
+    $dateRange = new \DatePeriod($begin, $interval, $end);
+
+    $range = [];
+    foreach ($dateRange as $date) {
+      $range[] = $date->format($format);
+    }
+
+    return $range;
+  }
+
 
   private function todoTransform($todos)
   {

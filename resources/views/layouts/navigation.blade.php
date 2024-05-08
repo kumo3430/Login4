@@ -24,6 +24,9 @@
                     <x-nav-link :href="route('checks.index')" :active="request()->routeIs('checks.index')">
                         {{ __('習慣紀錄') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('charts.index')" :active="request()->routeIs('charts.index')">
+                        {{ __('習慣圖表') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -95,6 +98,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('checks.index')" :active="request()->routeIs('checks.index')">
                 {{ __('習慣紀錄') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('charts.index')" :active="request()->routeIs('charts.index')">
+                {{ __('習慣圖表') }}
             </x-responsive-nav-link>
         </div>
 

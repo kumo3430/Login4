@@ -10,13 +10,21 @@ use App\Repositories\RecurringRepository;
 class CheckService
 {
   function __construct(
-    protected TodoRepository $todoRepository,
     protected RecurringRepository $recurringRepository,
-    protected CategoryRepository $categoryRepository,
     protected CheckRepository $checkRepository,
   ) {
   }
   function show($userId)
+  {
+    // 1. 更新
+    $instances = $this->recurringRepository->needRenewInstances();
+    // 2. 創建
+    $this->processInstances($instances);
+    // 3. 顯示
+    return $this->recurringRepository->findTodoMainRecurring($userId);
+  }
+
+  function chart($userId)
   {
     // 1. 更新
     $instances = $this->recurringRepository->needRenewInstances();
@@ -46,21 +54,4 @@ class CheckService
 
   }
 
-  function edit($todoId)
-  {
-    $todo = $this->todoRepository->find($todoId);
-
-    $categoryId = $todo['category_id'];
-    $categoryItem = $this->categoryRepository->find($categoryId, $todoId);
-
-    $todoAttributes = $todo->getAttributes();
-    $categoryItemAttributes = $categoryItem->getAttributes();
-    return array_merge($todoAttributes, $categoryItemAttributes);
-  }
-
-
-  function destroy($id)
-  {
-    $this->todoRepository->destroy($id);
-  }
 }

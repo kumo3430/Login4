@@ -34,14 +34,8 @@ Route::get('/checks',[CheckController::class, 'index'])->name('checks.index');
 Route::put('/checks/{id}',[CheckController::class, 'update'])->name('checks.update');
 Route::post('/checks/{id}/record',[CheckController::class, 'record'])->name('checks.record');
 
-// Route::post('/todos/store',[TodoController::class, 'store'])->name('todos.store');
-//// Route::get('/todos/create',[TodoController::class, 'create'])->name('todos.create');
-//// Route::get('/todos/{id}/edit',[TodoController::class,'edit'])->name('todos.edit');
+Route::get('/charts',[CheckController::class, 'chart'])->name('charts.index');
 
-// Route::delete('/todo/{id}',[TodoController::class,'destroy'])->name('todos.destroy');
-
-// Route::resource('todos', TodoController::class);
-// Route::post('/todos/recurringAdd',[TodoController::class, 'recurringAdd'])->name('todos.recurringAdd');
 Route::resources([
     'todos' => TodoController::class,
     // 'checks' => CheckController::class,
