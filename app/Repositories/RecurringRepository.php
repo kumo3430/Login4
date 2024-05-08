@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\StudySpacedRepetition;
 use ArielMejiaDev\LarapexCharts\Facades\LarapexChart;
+use App\Charts\recurringChart;
 
 class RecurringRepository
 {
@@ -114,7 +115,7 @@ class RecurringRepository
     // 合併 todos 與 recurring instances
     return $todos->map(function ($todo) use ($instancesByTodoId) {
       $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
-      $todo->chart = $this->makeChart($todo);
+      $todo->chart = $this->makeLaravelChart($todo);
       return $todo;
     });
   }
@@ -138,6 +139,16 @@ class RecurringRepository
       ])
       // ->setLabels(['Done', 'Not Yet'])
       ->setXAxis($this->createDateRange($todo));
+
+    return $chart;
+  }
+
+  protected function makeLaravelChart($todo)
+  {
+    $chart = new recurringChart;
+    $chart->labels($this->createDateRange($todo));  // X轴数据
+    $chart->title($todo->title); //标题
+    $chart->dataset('My dataset 1', 'line', $this->getDailyChecks($todo));
 
     return $chart;
   }
