@@ -25,10 +25,6 @@
                 <div class="col-start-1 col-end-4" id="goalValue-{{ $todo->recurringInstance[0]->id }}"
                     data-value="{{ $todo->recurringInstance[0]->goal_value }}"> {{ $todo->displayText }} </div>
                 <div class="col-start-1 col-end-7">
-                    {{-- {!! $todo->chart->container() !!}
-                    <script src="{{ $todo->chart->cdn() }}"></script>
-                    {!! $todo->chart->script() !!} --}}
-
                     {!! $todo->chart->container() !!}
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
                     {!! $todo->chart->script() !!}

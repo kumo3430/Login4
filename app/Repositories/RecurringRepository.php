@@ -119,44 +119,23 @@ class RecurringRepository
       return $todo;
     });
   }
-  protected function makeChart($todo)
-  {
-    $todosDone = [2, 3, 4, 5, 3, 2, 2, 2, 1];      // 這裡是完成的 To-dos 的數據
-    $todosNotYet = $this->getDailyChecks($todo);    // 這裡是未完成的 To-dos 的數據
-    // dd($todosNotYet);
-    // dd($this->createDateRange($todo));
-    $chart = LarapexChart::lineChart()
-      ->setTitle($todo->title)
-      ->setDataset([
-        // [
-        //     'name' => 'Done',
-        //     'data' => $todosDone
-        // ],
-        [
-          'name' => 'Not Yet',
-          'data' => $todosNotYet
-        ]
-      ])
-      // ->setLabels(['Done', 'Not Yet'])
-      ->setXAxis($this->createDateRange($todo));
-
-    return $chart;
-  }
 
   protected function makeLaravelChart($todo)
   {
     $chart = new recurringChart;
-    $chart->labels($this->createDateRange($todo));  // X轴数据
-    $chart->title($todo->title); //标题
-    $chart->dataset('My dataset 1', 'line', $this->getDailyChecks($todo));
+    $chart->labels($this->createDateRange($todo));
+    // $chart->title($todo->title);
+    $chart->displaylegend(false);
+    $chart->dataset('', 'line', $this->getDailyChecks($todo))
+    // ->fill(false)
+    ->linetension(0.1);
 
     return $chart;
   }
 
   function getDailyChecks($todo)
   {
-    $format = 'Y-m-d';
-    $dates = $this->createDateRange($todo, $format);
+    $dates = $this->createDateRange($todo);
 
     $checks = DB::table('recurring_checks')
       ->select(DB::raw('DATE_FORMAT(check_datetime, "' . '%Y-%m-%d' . '") as formatted_date'), DB::raw('SUM(current_value) as total_value'))
@@ -165,14 +144,14 @@ class RecurringRepository
       ->groupBy('formatted_date')
       ->pluck('total_value', 'formatted_date')
       ->toArray();
-    // dd($dates);
+
     // 確保每一天都有數據，沒有的話填充為0
     $dailyChecks = [];
     foreach ($dates as $date) {
 
       $dailyChecks[] = isset($checks[$date]) ? $checks[$date] : 0;
     }
-    // dd($dailyChecks);
+
     return $dailyChecks;
   }
 
