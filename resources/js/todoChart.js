@@ -1,66 +1,47 @@
+const recurringInstancesData = {};  // 存储重复的实例数据以供快速访问
 window.onload = function() {
-  
-  var divs = document.querySelectorAll('div[id^="isCompleted-"]'); 
-
-  divs.forEach(function(div) {
-    var recurringInstanceId = div.getAttribute('data-value');
-    console.log("Initial recurringInstanceId:", recurringInstanceId);
-    var instancesString = document.getElementById('instances-' + recurringInstanceId).getAttribute('data-value');
-    var instances = JSON.parse(instancesString);  
-    var index = document.getElementById('index-' + recurringInstanceId);
-    var currentIndex = parseInt(index.getAttribute('data-value'), 10);  
-    index.setAttribute('data-value', instances.length); 
-    // console.log("instances:", instances); // 直接输出数组对象
-    // console.log("instancesString:", instancesString); 
-    // console.log("instances.length:", instances.length); 
-    // console.log("currentIndex:", currentIndex);
-    // console.log("currentInstance:", instances[currentIndex]); 
+  document.querySelectorAll('div[id^="isCompleted-"]').forEach(div => {
+    const recurringInstanceId = div.getAttribute('data-value');
+    const instancesString = document.getElementById('instances-' + recurringInstanceId).getAttribute('data-value');
+    const instances = JSON.parse(instancesString);
+    recurringInstancesData[recurringInstanceId] = {
+      instances: instances,
+      currentIndex: instances.length-1 
+    };
+    updateDisplay(recurringInstanceId);
   });
 }
 
-window.incrementValue = function(recurringInstanceId) {
-    console.log("Initial recurringInstanceId:", recurringInstanceId);
-    var instancesElement = document.getElementById('instances-' + recurringInstanceId);
-    var instances = JSON.parse(instancesElement.getAttribute('data-value'));  // 转换 JSON 字符串为 JavaScript 数组
-    var index = document.getElementById('index-' + recurringInstanceId);
-    var currentIndex = parseInt(index.getAttribute('data-value'), 10);  
+function updateDisplay(recurringInstanceId) {
+  const data = recurringInstancesData[recurringInstanceId];
+  if (!data) return;
+  const { instances, currentIndex } = data;
+  var index = document.getElementById('index-' + recurringInstanceId);
+  var instancesElement = document.getElementById('instances-' + recurringInstanceId);
+  if (instances[currentIndex]) {
+    instancesElement.textContent = instances[currentIndex].start_date; 
+    index.textContent = instances[currentIndex].end_date; 
+  }
+}
 
-    if(currentIndex+1 <= instances.length) {
-      index.setAttribute('data-value', currentIndex+1); 
-      console.log("instances:", instances); // 直接输出数组对象
-      console.log("instancesString:", instancesElement); 
-      console.log("currentIndex:", currentIndex+1);
-      console.log("currentInstance:", instances[currentIndex-1+1]); 
-   
-      instancesElement.textContent = instances[currentIndex-1+1].start_date; 
-      index.textContent = instances[currentIndex-1+1].end_date; 
-    } else {
-      console.log("已為最後一筆");
-    }
+window.incrementValue = function(recurringInstanceId) {
+  const data = recurringInstancesData[recurringInstanceId];
+  if (!data || data.currentIndex + 1 >= data.instances.length) {
+    console.log("已為最後一筆");
+    return;
+  }
+  data.currentIndex++;
+  updateDisplay(recurringInstanceId);
 }
 
 window.decrementValue = function(recurringInstanceId) {
-  console.log("Initial recurringInstanceId:", recurringInstanceId);
-  var instancesElement = document.getElementById('instances-' + recurringInstanceId);
-  var instances = JSON.parse(instancesElement.getAttribute('data-value'));  // 转换 JSON 字符串为 JavaScript 数组
-  var index = document.getElementById('index-' + recurringInstanceId);
-  var currentIndex = parseInt(index.getAttribute('data-value'), 10);  
-  console.log("currentIndex:", currentIndex);
-  console.log("currentIndex-1:", currentIndex-1);
-  console.log("instances.length:", instances.length);
-
-  if(currentIndex-1 <= instances.length && currentIndex-1 >=0) {
-    index.setAttribute('data-value', currentIndex-1); 
-    console.log("instances:", instances); // 直接输出数组对象
-    console.log("instancesString:", instancesElement); 
-    console.log("currentIndex:", currentIndex-1);
-    console.log("currentInstance:", instances[currentIndex-1-1]); 
-
-    instancesElement.textContent = instances[currentIndex-1-1].start_date; 
-    index.textContent = instances[currentIndex-1-1].end_date; 
-  } else {
-    console.log("已為最後一筆");
+  const data = recurringInstancesData[recurringInstanceId];
+  if (!data || data.currentIndex <= 0) {
+    console.log("已是第一筆");
+    return;
   }
+  data.currentIndex--;
+  updateDisplay(recurringInstanceId);
 }
 
 window.submitValue = function(recurringInstanceId) {
