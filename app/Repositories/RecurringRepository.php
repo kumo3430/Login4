@@ -99,8 +99,9 @@ class RecurringRepository
   protected function fetchRecurringInstances($todoIds = [])
   {
     // 创建一个查询构建器实例
-    $query = $this->recurringInstance->where('is_added', '=', 0);
+    // $query = $this->recurringInstance->where('is_added', '=', 0);
 
+    $query = $this->recurringInstance->orderBy('id', 'desc');
     // 如果 todoIds 不为空，则增加一个条件过滤 todo_id
     if (!empty($todoIds)) {
         $query->whereIn('todo_id', $todoIds);
@@ -114,29 +115,22 @@ class RecurringRepository
   {
     // 將 recurringInstances 映射到它們相對應的 todo_id
     $instancesByTodoId = $recurringInstances->groupBy('todo_id');
-    
-
+    // dd($instancesByTodoId[49][0]);
     // 合併 todos 與 recurring instances
     return $todos->map(function ($todo) use ($instancesByTodoId) {
-      $formattedInstances = $instancesByTodoId[$todo->id]->map(function ($instance) {
-        $instance->start_date = $instance->start_date->format('Y-m-d');
-        $instance->end_date = $instance->end_date->format('Y-m-d');
-        return $instance;
-    });
-    $todo->recurringInstances = $formattedInstances;
-      // $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
-      $todo->chart = $this->makeLaravelChart($todo);
+      $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
+      $todo->chart = $this->makeLaravelChart($instancesByTodoId[$todo->id][0]);
       return $todo;
     });
   }
 
-  protected function makeLaravelChart($todo)
+  protected function makeLaravelChart($recurringInstance)
   {
     $chart = new recurringChart;
-    $chart->labels($this->createDateRange($todo));
+    $chart->labels($this->createDateRange($recurringInstance));
     // $chart->title($todo->title);
     $chart->displaylegend(false);
-    $chart->dataset('', 'line', $this->getDailyChecks($todo))
+    $chart->dataset('', 'line', $this->getDailyChecks($recurringInstance))
       // ->fill(false)
       ->linetension(0.1);
 
@@ -146,7 +140,7 @@ class RecurringRepository
           [
             'ticks' => [
               'min' => 0,
-              'max' => $todo->recurringInstance[0]->goal_value,
+              'max' => $recurringInstance->goal_value,
               'stepSize' => 1
             ]
           ]
@@ -157,13 +151,13 @@ class RecurringRepository
     return $chart;
   }
 
-  function getDailyChecks($todo)
+  function getDailyChecks($recurringInstance)
   {
-    $dates = $this->createDateRange($todo);
+    $dates = $this->createDateRange($recurringInstance);
 
     $checks = DB::table('recurring_checks')
       ->select(DB::raw('DATE_FORMAT(check_datetime, "' . '%Y-%m-%d' . '") as formatted_date'), DB::raw('SUM(current_value) as total_value'))
-      ->where('instance_id', $todo->recurringInstance[0]->id)
+      ->where('instance_id', $recurringInstance->id)
       ->whereIn(DB::raw('DATE(check_datetime)'), $dates) // 這裡使用 DATE() 來保證日期格式一致
       ->groupBy('formatted_date')
       ->pluck('total_value', 'formatted_date')
@@ -179,10 +173,10 @@ class RecurringRepository
     return $dailyChecks;
   }
 
-  function createDateRange($todo, $format = "Y-m-d")
+  function createDateRange($recurringInstance, $format = "Y-m-d")
   {
-    $begin = new \DateTime($todo->recurringInstance[0]->start_date);
-    $end = new \DateTime($todo->recurringInstance[0]->end_date);
+    $begin = new \DateTime($recurringInstance->start_date);
+    $end = new \DateTime($recurringInstance->end_date);
 
     $interval = new \DateInterval('P1D'); // 1 Day
     $dateRange = new \DatePeriod($begin, $interval, $end);
@@ -283,7 +277,7 @@ class RecurringRepository
 
     $todoIds = $recurringInstances->pluck('todo_id')->unique();
     $todos = $this->fetchTodos($userId, $todoIds->all());
-    // dd($recurringInstances);
+    // dd($todos);
     // dd($this->mergeTodoWithRecurringInstances($todos, $recurringInstances));
     return $this->mergeTodoWithRecurringInstances($todos, $recurringInstances);
   }
