@@ -119,76 +119,11 @@ class RecurringRepository
     // 合併 todos 與 recurring instances
     return $todos->map(function ($todo) use ($instancesByTodoId) {
       $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
-      $todo->chart = $this->makeLaravelChart($instancesByTodoId[$todo->id][0]);
+      $todo->chart = new RecurringChart();
+      $todo->chart->setupChart($instancesByTodoId[$todo->id][0]);
       return $todo;
     });
   }
-
-  protected function makeLaravelChart($recurringInstance)
-  {
-    $chart = new recurringChart;
-    $chart->labels($this->createDateRange($recurringInstance));
-    // $chart->title($todo->title);
-    $chart->displaylegend(false);
-    $chart->dataset('', 'line', $this->getDailyChecks($recurringInstance))
-      // ->fill(false)
-      ->linetension(0.1);
-
-    $chart->options([
-      'scales' => [
-        'yAxes' => [
-          [
-            'ticks' => [
-              'min' => 0,
-              'max' => $recurringInstance->goal_value,
-              'stepSize' => 1
-            ]
-          ]
-        ]
-      ]
-    ]);
-
-    return $chart;
-  }
-
-  function getDailyChecks($recurringInstance)
-  {
-    $dates = $this->createDateRange($recurringInstance);
-
-    $checks = DB::table('recurring_checks')
-      ->select(DB::raw('DATE_FORMAT(check_datetime, "' . '%Y-%m-%d' . '") as formatted_date'), DB::raw('SUM(current_value) as total_value'))
-      ->where('instance_id', $recurringInstance->id)
-      ->whereIn(DB::raw('DATE(check_datetime)'), $dates) // 這裡使用 DATE() 來保證日期格式一致
-      ->groupBy('formatted_date')
-      ->pluck('total_value', 'formatted_date')
-      ->toArray();
-
-    // 確保每一天都有數據，沒有的話填充為0
-    $dailyChecks = [];
-    foreach ($dates as $date) {
-
-      $dailyChecks[] = isset($checks[$date]) ? $checks[$date] : 0;
-    }
-
-    return $dailyChecks;
-  }
-
-  function createDateRange($recurringInstance, $format = "Y-m-d")
-  {
-    $begin = new \DateTime($recurringInstance->start_date);
-    $end = new \DateTime($recurringInstance->end_date);
-
-    $interval = new \DateInterval('P1D'); // 1 Day
-    $dateRange = new \DatePeriod($begin, $interval, $end);
-
-    $range = [];
-    foreach ($dateRange as $date) {
-      $range[] = $date->format($format);
-    }
-
-    return $range;
-  }
-
 
   private function todoTransform($todos)
   {
