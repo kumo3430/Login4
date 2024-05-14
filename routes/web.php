@@ -35,6 +35,7 @@ Route::put('/checks/{id}',[CheckController::class, 'update'])->name('checks.upda
 Route::post('/checks/{id}/record',[CheckController::class, 'record'])->name('checks.record');
 
 Route::get('/charts',[CheckController::class, 'chart'])->name('charts.index');
+Route::post('/charts/{recurringInstanceId}',[CheckController::class, 'getChartData'])->name('charts.getChartData');
 
 Route::resources([
     'todos' => TodoController::class,

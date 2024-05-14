@@ -3,6 +3,7 @@
 @section('title', '習慣紀錄')
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3"></script>
     @vite(['resources/js/todoChart.js'])
 @endsection
 
@@ -59,10 +60,11 @@
                 {{-- <div class="col-start-1 col-end-3"> {{ $todo->category_id }}</div>
                 <div class="col-start-1 col-end-3" id="goalValue-{{ $todo->recurringInstance[0]->id }}"
                     data-value="{{ $todo->recurringInstance[0]->goal_value }}"> {{ $todo->displayText }} </div> --}}
-                <div id="chart-{{ $todo->recurringInstance[0]->id }}" class="col-start-1 col-end-7">
+                <div id="chart-{{  $todo->recurringInstance[0]->id }}" data-value="{{ $todo->chart->id }}"" class="col-start-1 col-end-7">
                     {!! $todo->chart->container() !!}
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
                     {!! $todo->chart->script() !!}
+                    {{-- {!! $todo->chart !!} --}}
 
                 </div>
             </div>

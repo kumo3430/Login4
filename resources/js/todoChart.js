@@ -1,4 +1,7 @@
+import { Chart, LineController, LineElement, PointElement, LinearScale, Title } from 'chart.js';
+
 const recurringInstancesData = {};  // 存储重复的实例数据以供快速访问
+
 window.onload = function() {
   document.querySelectorAll('div[id^="isCompleted-"]').forEach(div => {
     const recurringInstanceId = div.getAttribute('data-value');
@@ -8,12 +11,13 @@ window.onload = function() {
       instances: instances,
       currentIndex: instances.length-1 
     };
-    updateDisplay(recurringInstanceId);
+    updateDisplay(recurringInstanceId,false);
   });
 }
 
-function updateDisplay(recurringInstanceId) {
+function updateDisplay(recurringInstanceId,update) {
   const data = recurringInstancesData[recurringInstanceId];
+  const chartId = document.getElementById('chart-' + recurringInstanceId).getAttribute('data-value');
   if (!data) return;
   const { instances, currentIndex } = data;
   var index = document.getElementById('index-' + recurringInstanceId);
@@ -21,6 +25,10 @@ function updateDisplay(recurringInstanceId) {
   if (instances[currentIndex]) {
     instancesElement.textContent = instances[currentIndex].start_date; 
     index.textContent = instances[currentIndex].end_date; 
+    console.log("instances[currentIndex].id", instances[currentIndex].id);
+    if(update){
+      updateChartData(chartId,instances[currentIndex].id)
+    }
   }
 }
 
@@ -31,7 +39,7 @@ window.incrementValue = function(recurringInstanceId) {
     return;
   }
   data.currentIndex++;
-  updateDisplay(recurringInstanceId);
+  updateDisplay(recurringInstanceId,true);
 }
 
 window.decrementValue = function(recurringInstanceId) {
@@ -41,7 +49,46 @@ window.decrementValue = function(recurringInstanceId) {
     return;
   }
   data.currentIndex--;
-  updateDisplay(recurringInstanceId);
+  updateDisplay(recurringInstanceId,true);
+}
+
+function updateChartData(chartId,recurringInstanceId) {
+  const instancesData = recurringInstancesData[recurringInstanceId];
+  axios.post(`/charts/${recurringInstanceId}`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: instancesData
+    // body: JSON.stringify({ instancesData })
+  //   body: JSON.stringify({
+  //     instancesData: instancesData['instances']
+  //  })
+  })
+  // .then(response => response.json())
+      .then(function (response) { 
+        console.log("chartId",chartId);
+        var chart = window[chartId];
+        console.log("chart",chart);
+        const data = response.data;
+        console.log("labels",data.labels[0]);
+        console.log("max",data.max);
+        console.log("datasetsData",data.datasetsData[0]);
+          if (chart) {
+            chart.data.labels = data.labels[0];
+            chart.options.scales.yAxes[0].ticks.max = data.max;
+            chart.data.datasets[0].data = data.datasetsData[0];
+            console.log("chartId 找到",chartId);
+            // 重绘图表
+            chart.update();
+          } else {
+            console.log("chartId找不到",chartId);
+          }
+        
+      })
+      .catch(function (error) {
+          console.error('Error fetching chart data:', error);
+      });
 }
 
 window.submitValue = function(recurringInstanceId) {
