@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TodoController;
+use App\Http\Controllers\ChartController;
 use App\Http\Controllers\CheckController;
 use App\Http\Controllers\ProfileController;
 
@@ -32,10 +33,10 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/checks',[CheckController::class, 'index'])->name('checks.index');
 Route::put('/checks/{id}',[CheckController::class, 'update'])->name('checks.update');
-Route::post('/checks/{id}/record',[CheckController::class, 'record'])->name('checks.record');
+Route::post('/checks/{id}/record',[CheckController::class, 'create'])->name('checks.record');
 
-Route::get('/charts',[CheckController::class, 'chart'])->name('charts.index');
-Route::post('/charts/{recurringInstanceId}',[CheckController::class, 'getChartData'])->name('charts.getChartData');
+Route::get('/charts',[ChartController::class, 'index'])->name('charts.index');
+Route::post('/charts/{recurringInstanceId}',[ChartController::class, 'getChartData'])->name('charts.getChartData');
 
 Route::resources([
     'todos' => TodoController::class,

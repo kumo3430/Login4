@@ -17,7 +17,6 @@ class TodoController extends Controller
     {
         $userId = Auth::user()->id;
         $todos = $this->todoService->show($userId);
-        // dd($todos);
         return view('todos.index', compact('todos'));
     }
 
@@ -47,8 +46,8 @@ class TodoController extends Controller
         $validated = $request->validated();
 
         $todo = $validated['todo'];
-        // $categoryItem = $validated['categoryItem'];
         $this->todoService->update($todo);
+        
         return response()->json(['message' => 'Todo successfully edited'], 200);
     }
     public function destroy($id)

@@ -98,16 +98,12 @@ class RecurringRepository
 
   protected function fetchRecurringInstances($todoIds = [])
   {
-    // 创建一个查询构建器实例
-    // $query = $this->recurringInstance->where('is_added', '=', 0);
-
     $query = $this->recurringInstance->orderBy('id', 'desc');
-    // 如果 todoIds 不为空，则增加一个条件过滤 todo_id
+
     if (!empty($todoIds)) {
         $query->whereIn('todo_id', $todoIds);
     }
 
-    // 执行查询并返回结果
     return $query->get();
   }
 
@@ -115,43 +111,14 @@ class RecurringRepository
   {
     // 將 recurringInstances 映射到它們相對應的 todo_id
     $instancesByTodoId = $recurringInstances->groupBy('todo_id');
-    // dd($instancesByTodoId[49][0]);
+
     // 合併 todos 與 recurring instances
     return $todos->map(function ($todo) use ($instancesByTodoId) {
       $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
       $todo->chart = new RecurringChart();
       $todo->chart->setupChart($instancesByTodoId[$todo->id][0]);
-
-      // $todo->chart = $this->makeLaravelChart($instancesByTodoId[$todo->id][0]);
       return $todo;
     });
-  }
-
-  protected function makeLaravelChart($recurringInstance)
-  {
-    $chart = new recurringChart;
-    $chart->labels($this->createDateRange($recurringInstance));
-    // $chart->title($todo->title);
-    $chart->displaylegend(false);
-    $chart->dataset('', 'line', $this->getDailyChecks($recurringInstance))
-      // ->fill(false)
-      ->linetension(0.1);
-
-    $chart->options([
-      'scales' => [
-        'yAxes' => [
-          [
-            'ticks' => [
-              'min' => 0,
-              'max' => $recurringInstance->goal_value,
-              'stepSize' => 1
-            ]
-          ]
-        ]
-      ]
-    ]);
-
-    return $chart;
   }
 
   public function getDailyChecks($recurringInstance)
@@ -282,8 +249,7 @@ class RecurringRepository
 
     $todoIds = $recurringInstances->pluck('todo_id')->unique();
     $todos = $this->fetchTodos($userId, $todoIds->all());
-    // dd($todos);
-    // dd($this->mergeTodoWithRecurringInstances($todos, $recurringInstances));
+
     return $this->mergeTodoWithRecurringInstances($todos, $recurringInstances);
   }
 }

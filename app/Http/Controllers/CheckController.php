@@ -19,50 +19,10 @@ class CheckController extends Controller
     {
         $userId = Auth::user()->id;
         $todos = $this->checkService->show($userId);
-        // dd($todos);
         return view('todos.checks', compact('todos'));
     }
 
-    public function chart()
-    {
-        $userId = Auth::user()->id;
-        $todos = $this->checkService->chart($userId);
-        // dd($todos);
-        return view('todos.charts', compact('todos'));
-    }
-    
-    public function getChartData(Request $request, $recurringInstanceId)
-    {
-        $requestData = json_encode($request->json('instancesData'));
-        $instancesData = json_decode($requestData);
-        $currentIndex = $instancesData->currentIndex;  
-        $recurringInstance = $instancesData->instances[$currentIndex];
-
-        $chartData = [
-            'labels' => [$this->recurringRepository->createDateRange($recurringInstance)], // 示例
-            'datasetsData' => [$this->recurringRepository->getDailyChecks($recurringInstance)],
-            'max' => $recurringInstance->goal_value,
-        ];
-        
-        return response()->json($chartData);
-    }
-
-    // private function prepareChartData($recurringInstance)
-    // {
-    //     // 准备数据逻辑
-    //     return [
-    //         'labels' => , // 示例
-    //         'datasets' => [
-    //             [
-    //                 'label' => 'Data',
-    //                 'data' => [10, 20, 30] // 示例
-    //             ]
-    //         ]
-    //     ];
-    // }
-
-    // 在 TodoController 中
-    public function record(Request $request, $recurringInstanceId)
+    public function create(Request $request, $recurringInstanceId)
     {
         $value = (int) $request->value;
         $isCompleted = $request->isCompleted;
@@ -74,11 +34,6 @@ class CheckController extends Controller
         return response()->json(['message' => 'Todo record successfully!']);
     }
 
-
-    public function create()
-    {
-        //
-    }
 
     public function store(Request $request)
     {

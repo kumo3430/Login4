@@ -51,7 +51,5 @@ class CheckService
   function create($value, $recurringInstanceId)
   {
     $this->checkRepository->create($value, $recurringInstanceId);
-
   }
-
 }
