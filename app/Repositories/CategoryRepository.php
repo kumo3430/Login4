@@ -55,10 +55,7 @@ class CategoryRepository
     // return $this->transformCategoryData($model->where('todo_id', $id)->first(), $categoryId);
     return $model->where('todo_id', $id)->first();
   }
-
-
-
-
+  
   function update($todo)
   {
     $id = $todo['id'];

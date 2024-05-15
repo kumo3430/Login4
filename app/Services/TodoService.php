@@ -17,7 +17,8 @@ class TodoService
   }
   function show($userId)
   {
-    return  $this->recurringRepository->fetchTodos($userId);
+    // return  $this->recurringRepository->fetchTodos($userId);
+    return  $this->todoRepository->fetchTodos($userId);
   }
 
 
