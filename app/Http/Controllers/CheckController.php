@@ -30,27 +30,20 @@ class CheckController extends Controller
         // dd($todos);
         return view('todos.charts', compact('todos'));
     }
-    // 在控制器中
+    
     public function getChartData(Request $request, $recurringInstanceId)
     {
-        $requestData = json_encode($request->json('body')); // 获取名为 'instancesData' 的字段数据
-        // Log::info('requestData Data: ' . json_encode($requestData));
-        Log::info('requestData Data: ' . ($requestData));
+        $requestData = json_encode($request->json('instancesData'));
         $instancesData = json_decode($requestData);
-        // Log::info('instancesData Data: ' . ($instancesData));
         $currentIndex = $instancesData->currentIndex;  
-        Log::info('currentIndex Data: ' . ($currentIndex));
-        // $recurringInstance =  json_decode( json_encode( $instancesData->instances[$currentIndex]),true);
         $recurringInstance = $instancesData->instances[$currentIndex];
-        Log::info('recurringInstance Data: ' . json_encode($recurringInstance));
 
         $chartData = [
             'labels' => [$this->recurringRepository->createDateRange($recurringInstance)], // 示例
             'datasetsData' => [$this->recurringRepository->getDailyChecks($recurringInstance)],
             'max' => $recurringInstance->goal_value,
-            // 'max' => [$recurringInstance['goal_value']],
         ];
-        ;
+        
         return response()->json($chartData);
     }
 
