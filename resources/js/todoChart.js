@@ -27,7 +27,8 @@ function updateDisplay(recurringInstanceId,update) {
     index.textContent = instances[currentIndex].end_date; 
     console.log("instances[currentIndex].id", instances[currentIndex].id);
     if(update){
-      updateChartData(chartId,instances[currentIndex].id)
+      // updateChartData(chartId,instances[currentIndex].id)
+      updateChartData(chartId,recurringInstanceId)
     }
   }
 }
@@ -54,6 +55,9 @@ window.decrementValue = function(recurringInstanceId) {
 
 function updateChartData(chartId,recurringInstanceId) {
   const instancesData = recurringInstancesData[recurringInstanceId];
+  console.log("recurringInstancesData",recurringInstancesData);
+  console.log("recurringInstanceId",recurringInstanceId);
+  console.log("instancesData",instancesData);
   axios.post(`/charts/${recurringInstanceId}`, {
     method: 'POST',
     headers: {

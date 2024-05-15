@@ -182,7 +182,7 @@ class RecurringRepository
     Log::info('end Data: ' . $recurringInstance->end_date);
     $begin = new \DateTime($recurringInstance->start_date);
     $end = new \DateTime($recurringInstance->end_date);
-
+    $end->modify('+1 day'); // 包含最後一天
     $interval = new \DateInterval('P1D'); // 1 Day
     $dateRange = new \DatePeriod($begin, $interval, $end);
 
