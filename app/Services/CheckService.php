@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\TodoRepository;
 use App\Repositories\CheckRepository;
 use App\Repositories\RecurringRepository;
+use Illuminate\Support\Facades\Log;
 
 class CheckService
 {
@@ -15,13 +16,6 @@ class CheckService
   ) {
   }
   function show($userId)
-  {
-    $instances = $this->recurringRepository->needRenewInstances();
-    $this->processInstances($instances);
-    return $this->findTodoMainRecurring($userId);
-  }
-
-  function chart($userId)
   {
     $instances = $this->recurringRepository->needRenewInstances();
     $this->processInstances($instances);
@@ -50,8 +44,13 @@ class CheckService
   {
     $instancesByTodoId = $recurringInstances->groupBy('todo_id');
 
-    return $todos->map(function ($todo) use ($instancesByTodoId) {
-      $todo->recurringInstances = $instancesByTodoId[$todo->id] ?? collect();
+    // 取得每個分組的第一筆資料
+    $firstInstances = $instancesByTodoId->map(function ($instances) {
+      return $instances->first();
+    });
+
+    return $todos->map(function ($todo) use ($firstInstances) {
+      $todo->recurringInstances = $firstInstances[$todo->id] ?? collect();
       return $todo;
     });
   }

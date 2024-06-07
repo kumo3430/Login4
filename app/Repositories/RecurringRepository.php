@@ -83,7 +83,7 @@ class RecurringRepository
     $query = $this->recurringInstance->orderBy('id', 'desc');
 
     if (!empty($todoIds)) {
-        $query->whereIn('todo_id', $todoIds);
+      $query->whereIn('todo_id', $todoIds);
     }
 
     return $query->get();
@@ -100,7 +100,7 @@ class RecurringRepository
       ->where('end_date', '<', now())
       ->get();
 
-      return $instances->map(function ($instance) {
+    return $instances->map(function ($instance) {
       $todo = $instance->Todo;
       $value = collect([
         $todo->studies->pluck('value'),
