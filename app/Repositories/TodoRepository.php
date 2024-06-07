@@ -71,7 +71,7 @@ class TodoRepository
             case "運動":
                 return "{$todo->frequency} {$todo->sports[0]->typeToString} {$todo->sports[0]->value} {$todo->sports[0]->goalUnitToString}";
             case "飲食":
-                return "{$todo->frequency} {$todo->diets[0]->typeToString} {$todo->diets[0]->value}";
+                return "{$todo->frequency} {$todo->diets[0]->typeToString} {$todo->diets[0]->value} {$todo->diets[0]->goalUnitToString}";
             case "作息":
                 return $this->generateRoutineText($todo->routines[0]);
             default:
